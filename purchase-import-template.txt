@@ -1,0 +1,109 @@
+Purchase Import Template - GST Software
+==========================================
+
+INSTRUCTIONS:
+1. Use this template to import purchase data into the GST Software
+2. Fill in the data below the header row
+3. Save as CSV or Excel format (.xlsx, .xls, .csv)
+4. Use the Import Excel feature in the Purchase tab
+
+REQUIRED HEADERS:
+- Supplier GSTIN: 15-character GST identification number
+- Supplier Name: Name of the supplier/vendor
+- Invoice Number: Invoice number from supplier
+- Invoice Type: Regular, Debit Note, Credit Note, etc.
+- Invoice Date: Date in DD/MM/YYYY format
+- Invoice Value: Total invoice amount (including tax)
+- Place of Supply: State where supply is made
+- Reverse Charge: Yes/No
+- Taxable Value: Value before tax
+- Integrated Tax: IGST amount
+- Central Tax: CGST amount
+- State Tax: SGST amount
+- Cess: Cess amount (if applicable)
+- ITC Available: Yes/No
+- Tax Rate: Tax rate percentage
+
+DATA FORMAT EXAMPLES:
+- Dates: Use DD/MM/YYYY format (e.g., 15/09/2025)
+- Numbers: Use decimal format (e.g., 15000.00)
+- GSTIN: 15 characters (e.g., 27AMUPB2207Q1ZN)
+- Yes/No fields: Use exactly "Yes" or "No"
+
+CSV DATA:
+Supplier GSTIN,Supplier Name,Invoice Number,Invoice Type,Invoice Date,Invoice Value,Place of Supply,Reverse Charge,Taxable Value,Integrated Tax,Central Tax,State Tax,Cess,ITC Available,Tax Rate
+[Your actual purchase data will go here - fill in your real entries below the header row]
+
+VALIDATION RULES:
+- Supplier GSTIN must be exactly 15 characters
+- Invoice Date must be in DD/MM/YYYY format
+- All monetary values must be numeric
+- Reverse Charge and ITC Available must be "Yes" or "No"
+- Tax Rate should include % symbol
+- Invoice Type should be one of: Regular, Debit Note, Credit Note, Refund Voucher
+
+COMMON INVOICE TYPES:
+- Regular: Standard purchase invoice
+- Debit Note: Additional charges
+- Credit Note: Returns or discounts
+- Refund Voucher: Refund transactions
+
+COMMON PLACES OF SUPPLY:
+- Maharashtra
+- Gujarat
+- Karnataka
+- Tamil Nadu
+- Delhi
+- Uttar Pradesh
+- West Bengal
+- Rajasthan
+- Madhya Pradesh
+- Andhra Pradesh
+- Telangana
+- Kerala
+- Punjab
+- Haryana
+- Bihar
+- Odisha
+- Assam
+- Jharkhand
+- Chhattisgarh
+- Uttarakhand
+- Himachal Pradesh
+- Jammu and Kashmir
+- Goa
+- Manipur
+- Meghalaya
+- Mizoram
+- Nagaland
+- Sikkim
+- Tripura
+- Arunachal Pradesh
+- Andaman and Nicobar Islands
+- Chandigarh
+- Dadra and Nagar Haveli
+- Daman and Diu
+- Lakshadweep
+- Puducherry
+
+TAX CALCULATION EXAMPLES:
+For 18% GST Rate:
+- Taxable Value: 1000.00
+- CGST (9%): 90.00
+- SGST (9%): 90.00
+- Total Tax: 180.00
+- Invoice Value: 1180.00
+
+For Inter-state Supply (18% IGST):
+- Taxable Value: 1000.00
+- IGST (18%): 180.00
+- CGST: 0.00
+- SGST: 0.00
+- Total Tax: 180.00
+- Invoice Value: 1180.00
+
+NOTES:
+- Ensure all required fields are filled
+- Check data accuracy before importing
+- Keep backup of original data
+- Contact support if you encounter any issues

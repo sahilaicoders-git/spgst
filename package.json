@@ -1,0 +1,82 @@
+{
+  "name": "gst-software",
+  "version": "1.0.0",
+  "description": "GST Software for Desktop - Universal Client Management",
+  "main": "public/electron.js",
+  "homepage": "./",
+  "scripts": {
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "react-scripts eject",
+    "electron": "electron .",
+    "electron-dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-pack": "electron-builder",
+    "preelectron-pack": "npm run build"
+  },
+  "keywords": [
+    "gst",
+    "desktop",
+    "electron",
+    "react",
+    "client-management"
+  ],
+  "author": "GST Software Team",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "electron": "^27.0.0",
+    "electron-store": "^8.1.0",
+    "electron-is-dev": "^2.0.0",
+    "uuid": "^9.0.0",
+    "lucide-react": "^0.294.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "wait-on": "^7.0.1",
+    "electron-builder": "^24.6.4",
+    "path-browserify": "^1.0.1",
+    "crypto-browserify": "^3.12.0",
+    "util": "^0.12.5",
+    "assert": "^2.0.0",
+    "os-browserify": "^0.3.0",
+    "@craco/craco": "^7.1.0",
+    "process": "^0.11.10",
+    "buffer": "^6.0.3"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "build": {
+    "appId": "com.gstsoftware.desktop",
+    "productName": "GST Software",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "build/**/*",
+      "public/electron.js",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.business"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}

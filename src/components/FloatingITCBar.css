@@ -1,0 +1,528 @@
+/* Floating ITC Bar */
+.floating-itc-bar {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+  max-width: 300px;
+  min-width: 200px;
+}
+
+.floating-itc-bar.collapsed {
+  max-height: 80px;
+}
+
+.floating-itc-bar.expanded {
+  max-height: 400px;
+}
+
+/* Main ITC Display */
+.itc-main {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.itc-main:hover {
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.itc-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-right: 12px;
+}
+
+.itc-content {
+  flex: 1;
+}
+
+.itc-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.itc-amount {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 2px;
+}
+
+.itc-month {
+  font-size: 10px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.itc-toggle {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.itc-toggle:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Expanded Details */
+.itc-details {
+  padding: 0 16px 16px 16px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.add-old-setoff {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.add-setoff-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-setoff-btn:hover {
+  background: #2563eb;
+}
+
+/* ITC Table Layout */
+.itc-table-layout {
+  background: #f8fafc;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.itc-table-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  background: #e2e8f0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.header-cell {
+  padding: 8px 4px;
+  text-align: center;
+  border-right: 1px solid #d1d5db;
+}
+
+.header-cell:last-child {
+  border-right: none;
+}
+
+.itc-table-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 11px;
+}
+
+.itc-table-row:last-child {
+  border-bottom: none;
+}
+
+.row-cell {
+  padding: 8px 4px;
+  text-align: center;
+  border-right: 1px solid #e2e8f0;
+  color: #374151;
+}
+
+.row-cell:last-child {
+  border-right: none;
+}
+
+.row-cell.component {
+  background: #f1f5f9;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.row-cell.total {
+  background: #fef3c7;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.row-cell.balance {
+  background: #dcfce7;
+  font-weight: 600;
+  color: #166534;
+}
+
+.itc-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 0;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #10b981;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ITC Modal */
+.itc-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.itc-modal {
+  background: white;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Old Setoff Modal */
+.old-setoff-modal {
+  max-width: 400px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.btn-cancel {
+  padding: 10px 20px;
+  background: #f3f4f6;
+  color: #374151;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background: #e5e7eb;
+}
+
+.btn-save {
+  padding: 10px 20px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-save:hover {
+  background: #2563eb;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 0 24px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 24px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f3f4f6;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.modal-content {
+  padding: 0 24px 24px 24px;
+}
+
+.itc-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.itc-card {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-left: 4px solid;
+}
+
+.itc-card.primary {
+  border-left-color: #3b82f6;
+}
+
+.itc-card.success {
+  border-left-color: #10b981;
+}
+
+.itc-card.warning {
+  border-left-color: #f59e0b;
+}
+
+.itc-card.info {
+  border-left-color: #8b5cf6;
+}
+
+.itc-card .card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.itc-card.primary .card-icon {
+  background: #3b82f6;
+}
+
+.itc-card.success .card-icon {
+  background: #10b981;
+}
+
+.itc-card.warning .card-icon {
+  background: #f59e0b;
+}
+
+.itc-card.info .card-icon {
+  background: #8b5cf6;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.card-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.itc-table {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.itc-table h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  color: #374151;
+  font-weight: 600;
+}
+
+.itc-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.itc-table th {
+  padding: 12px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.itc-table td {
+  padding: 12px;
+  font-size: 13px;
+  color: #374151;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.itc-table tbody tr:hover {
+  background: #f1f5f9;
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.status.available {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status.utilized {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status.expired {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .floating-itc-bar {
+    bottom: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+
+  .itc-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .itc-modal {
+    margin: 10px;
+    max-height: 90vh;
+  }
+
+  .modal-header {
+    padding: 16px 16px 0 16px;
+  }
+
+  .modal-content {
+    padding: 0 16px 16px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .itc-main {
+    padding: 12px;
+  }
+
+  .itc-icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+  }
+
+  .itc-amount {
+    font-size: 16px;
+  }
+
+  .itc-details {
+    padding: 0 12px 12px 12px;
+  }
+}

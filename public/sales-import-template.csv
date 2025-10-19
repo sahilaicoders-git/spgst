@@ -1,0 +1,5 @@
+customerGSTIN,customerName,invoiceNumber,invoiceDate,invoiceType,invoiceValue,taxableValue,centralTax,stateTax,integratedTax,hsnCode,quantity,rate,placeOfSupply,transactionType
+27AABCU9603R1ZM,ABC Private Ltd,INV/2024/001,2024-10-15,Regular,11800,10000,900,900,0,8517,10,1000,Maharashtra,B2B
+,John Doe Retail,INV/2024/002,2024-10-16,Regular,5900,5000,450,450,0,6204,5,1000,Maharashtra,B2C
+29AACCV5678K1Z5,XYZ Corporation,INV/2024/003,2024-10-17,Regular,23600,20000,1800,1800,0,8471,20,1000,Gujarat,B2B
+

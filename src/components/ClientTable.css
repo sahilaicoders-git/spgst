@@ -1,0 +1,412 @@
+/* Modern Client Table - Light Blue Theme */
+.client-table-container {
+  background: #dbeafe;
+  border: 1px solid #93c5fd;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.client-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+}
+
+.client-table thead {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+}
+
+.client-table th {
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1e40af;
+  border-bottom: 1px solid #93c5fd;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: transparent;
+}
+
+.sortable-header {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  user-select: none;
+  border-radius: 4px;
+  margin: 1px;
+}
+
+.sortable-header:hover {
+  background: rgba(255, 255, 255, 0.8);
+  color: #1e40af;
+  transform: none;
+}
+
+.sortable-header.active {
+  background: #3b82f6;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 0;
+  min-height: 24px;
+}
+
+.header-label {
+  flex: 1;
+}
+
+.sort-indicator {
+  display: flex;
+  align-items: center;
+  color: #3b82f6;
+  transition: all 0.2s ease;
+}
+
+.sortable-header.active .sort-indicator {
+  color: #ffffff;
+}
+
+/* First and last header cells styling */
+.client-table th:first-child {
+  border-top-left-radius: 16px;
+  padding-left: 12px;
+}
+
+.client-table th:last-child {
+  border-top-right-radius: 16px;
+  padding-right: 12px;
+}
+
+/* Header cell separators */
+.client-table th:not(:last-child) {
+  border-right: 1px solid rgba(147, 197, 253, 0.5);
+}
+
+.client-row {
+  border-bottom: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.client-row:hover {
+  background: #f8fafc;
+}
+
+.client-row.selected {
+  background: #dbeafe;
+  border-left: 4px solid #3b82f6;
+}
+
+.client-row.focused {
+  background: #f0f9ff;
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+.client-row.focused.selected {
+  background: #dbeafe;
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+.client-table td {
+  padding: 20px 16px;
+  font-size: 14px;
+  color: #1e40af !important;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: middle;
+}
+
+/* Selection Column */
+.select-header,
+.select-cell {
+  width: 60px;
+  text-align: center;
+}
+
+.select-all-checkbox,
+.client-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+  background: #ffffff;
+  border-radius: 4px;
+}
+
+/* Client Name Column */
+.client-name-cell {
+  min-width: 250px;
+}
+
+.client-name-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.client-name {
+  font-weight: 700;
+  color: #1e40af !important;
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+.client-id {
+  display: none;
+}
+
+/* Business Column */
+.business-cell {
+  min-width: 200px;
+}
+
+.business-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.business-icon {
+  width: 18px;
+  height: 18px;
+  color: #6b7280;
+}
+
+.business-name {
+  font-weight: 500;
+  color: #1e40af;
+}
+
+/* GST Type Column */
+.gst-type-cell {
+  min-width: 140px;
+}
+
+.gst-type-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.gst-type-badge.regular {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.gst-type-badge.composition {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* GST Number Column */
+.gst-no-cell {
+  min-width: 180px;
+}
+
+.gst-no-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gst-icon {
+  width: 16px;
+  height: 16px;
+  color: #6b7280;
+}
+
+.gst-number {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  font-size: 14px;
+  color: #1e40af;
+  font-weight: 500;
+}
+
+/* Frequency Column */
+.frequency-cell {
+  min-width: 140px;
+}
+
+.frequency-badge {
+  background: #dcfce7;
+  color: #166534;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+/* Date Column */
+.date-cell {
+  min-width: 140px;
+}
+
+.date-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-icon {
+  width: 16px;
+  height: 16px;
+  color: #6b7280;
+}
+
+.date-text {
+  color: #1e40af;
+  font-size: 14px;
+}
+
+/* Actions Column - Removed */
+
+/* Empty State */
+.table-empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #6b7280;
+}
+
+.table-empty-state .empty-icon {
+  font-size: 64px;
+  margin-bottom: 24px;
+  opacity: 0.8;
+}
+
+.table-empty-state h3 {
+  font-size: 24px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.table-empty-state p {
+  font-size: 16px;
+  opacity: 0.8;
+  color: #6b7280;
+}
+
+/* Modern Scrollbar */
+.table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: #374151;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #6b7280;
+  border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .client-table th,
+  .client-table td {
+    padding: 16px 12px;
+  }
+  
+  .client-name-cell {
+    min-width: 200px;
+  }
+  
+  .business-cell {
+    min-width: 160px;
+  }
+  
+  .gst-no-cell {
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .client-table th,
+  .client-table td {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+  
+  .client-name-cell,
+  .business-cell,
+  .gst-no-cell {
+    min-width: 120px;
+  }
+  
+  .gst-type-cell,
+  .frequency-cell,
+  .date-cell {
+    min-width: 100px;
+  }
+  
+  .action-buttons {
+    display: none;
+  }
+  
+  .client-name {
+    font-size: 14px;
+  }
+  
+  .gst-type-badge,
+  .frequency-badge {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .client-table th,
+  .client-table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+  
+  .client-name-cell,
+  .business-cell,
+  .gst-no-cell {
+    min-width: 100px;
+  }
+  
+  .gst-type-cell,
+  .frequency-cell,
+  .date-cell {
+    min-width: 80px;
+  }
+  
+  .actions-header,
+  .actions-cell {
+    display: none;
+  }
+}
