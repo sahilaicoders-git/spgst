@@ -23,10 +23,6 @@ const Header = ({ onAddClient }) => {
             <Users className="logo-icon" />
             <h1>GST Software</h1>
           </div>
-          <div className="step-indicator">
-            <span className="step-number">STEP 2</span>
-            <span className="step-title">UNIVERSAL CLIENT PAGE</span>
-          </div>
         </div>
         <div className="header-right">
           <button 
