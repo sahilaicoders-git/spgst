@@ -185,7 +185,14 @@ const ReportPage = ({ selectedClient, selectedMonth }) => {
     });
 
     itcSummary.totalITC = itcSummary.cgstITC + itcSummary.sgstITC + itcSummary.igstITC + itcSummary.cessITC;
-    itcSummary.utilizedITC = 0; // This would be calculated based on tax liability
+    
+    // Calculate utilized ITC based on tax liability
+    const utilizedCGST = Math.min(itcSummary.cgstITC, taxSummary.totalCGST);
+    const utilizedSGST = Math.min(itcSummary.sgstITC, taxSummary.totalSGST);
+    const utilizedIGST = Math.min(itcSummary.igstITC, taxSummary.totalIGST);
+    const utilizedCess = Math.min(itcSummary.cessITC, taxSummary.totalCess);
+    
+    itcSummary.utilizedITC = utilizedCGST + utilizedSGST + utilizedIGST + utilizedCess;
     itcSummary.carryForwardITC = itcSummary.totalITC - itcSummary.utilizedITC;
 
     // Tax Summary
@@ -265,6 +272,7 @@ const ReportPage = ({ selectedClient, selectedMonth }) => {
 
   const sections = [
     { id: 'summary', label: 'Summary', icon: TrendingUp },
+    { id: 'gstr3b', label: 'GSTR-3B Format', icon: FileText },
     { id: 'sales', label: 'Sales Details', icon: Package },
     { id: 'purchases', label: 'Purchase Details', icon: CreditCard },
     { id: 'hsn', label: 'HSN Summary', icon: FileText },
@@ -347,6 +355,258 @@ const ReportPage = ({ selectedClient, selectedMonth }) => {
           <div className="loading-indicator">
             <div className="loading-spinner"></div>
             <span>Loading report data...</span>
+          </div>
+        )}
+
+        {/* GSTR-3B Format Section */}
+        {activeSection === 'gstr3b' && (
+          <div className="gstr3b-section">
+            <div className="gstr3b-header">
+              <h3>GSTR-3B Return - {reportData.period}</h3>
+              <div className="gstr3b-info">
+                <span>GSTIN: {reportData.gstin}</span>
+                <span>Legal Name: {reportData.legalName}</span>
+              </div>
+            </div>
+            
+            <div className="gstr3b-container">
+              {/* Section 3.1 - Outward taxable supplies */}
+              <div className="gstr3b-table-section">
+                <h4>3.1 Outward taxable supplies (other than zero rated, nil rated, exempted and non-GST supplies)</h4>
+                <div className="gstr3b-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Nature of Supplies</th>
+                        <th>Total Taxable Value</th>
+                        <th>Integrated Tax</th>
+                        <th>Central Tax</th>
+                        <th>State/UT Tax</th>
+                        <th>Cess</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Outward taxable supplies (other than zero rated, nil rated, exempted and non-GST supplies)</td>
+                        <td>₹{reportData.taxSummary.totalTaxableValue.toFixed(2)}</td>
+                        <td>₹{reportData.taxSummary.totalIGST.toFixed(2)}</td>
+                        <td>₹{reportData.taxSummary.totalCGST.toFixed(2)}</td>
+                        <td>₹{reportData.taxSummary.totalSGST.toFixed(2)}</td>
+                        <td>₹{reportData.taxSummary.totalCess.toFixed(2)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Section 3.2 - Outward taxable supplies (zero rated) */}
+              <div className="gstr3b-table-section">
+                <h4>3.2 Outward taxable supplies (zero rated)</h4>
+                <div className="gstr3b-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Nature of Supplies</th>
+                        <th>Total Taxable Value</th>
+                        <th>Integrated Tax</th>
+                        <th>Central Tax</th>
+                        <th>State/UT Tax</th>
+                        <th>Cess</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Outward taxable supplies (zero rated)</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Section 4 - Eligible ITC */}
+              <div className="gstr3b-table-section">
+                <h4>4. Eligible ITC</h4>
+                <div className="gstr3b-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Details</th>
+                        <th>Integrated Tax</th>
+                        <th>Central Tax</th>
+                        <th>State/UT Tax</th>
+                        <th>Cess</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>(A) ITC Available (whether in full or part)</td>
+                        <td>₹{reportData.itcSummary.igstITC.toFixed(2)}</td>
+                        <td>₹{reportData.itcSummary.cgstITC.toFixed(2)}</td>
+                        <td>₹{reportData.itcSummary.sgstITC.toFixed(2)}</td>
+                        <td>₹{reportData.itcSummary.cessITC.toFixed(2)}</td>
+                      </tr>
+                      <tr>
+                        <td>(B) ITC Reversed</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                      </tr>
+                      <tr className="total-row">
+                        <td>(C) Net ITC Available (A) - (B)</td>
+                        <td>₹{reportData.itcSummary.igstITC.toFixed(2)}</td>
+                        <td>₹{reportData.itcSummary.cgstITC.toFixed(2)}</td>
+                        <td>₹{reportData.itcSummary.sgstITC.toFixed(2)}</td>
+                        <td>₹{reportData.itcSummary.cessITC.toFixed(2)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Section 5 - ITC Utilized */}
+              <div className="gstr3b-table-section">
+                <h4>5. ITC Utilized</h4>
+                <div className="gstr3b-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Details</th>
+                        <th>Integrated Tax</th>
+                        <th>Central Tax</th>
+                        <th>State/UT Tax</th>
+                        <th>Cess</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>(A) ITC Utilized</td>
+                        <td>₹{Math.min(reportData.itcSummary.igstITC, reportData.taxSummary.totalIGST).toFixed(2)}</td>
+                        <td>₹{Math.min(reportData.itcSummary.cgstITC, reportData.taxSummary.totalCGST).toFixed(2)}</td>
+                        <td>₹{Math.min(reportData.itcSummary.sgstITC, reportData.taxSummary.totalSGST).toFixed(2)}</td>
+                        <td>₹{Math.min(reportData.itcSummary.cessITC, reportData.taxSummary.totalCess).toFixed(2)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Section 6 - Exempt, nil rated and non-GST outward supplies */}
+              <div className="gstr3b-table-section">
+                <h4>6. Exempt, nil rated and non-GST outward supplies</h4>
+                <div className="gstr3b-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Nature of Supplies</th>
+                        <th>Total Taxable Value</th>
+                        <th>Integrated Tax</th>
+                        <th>Central Tax</th>
+                        <th>State/UT Tax</th>
+                        <th>Cess</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Exempt, nil rated and non-GST outward supplies</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Section 7 - Interest and Late Fee */}
+              <div className="gstr3b-table-section">
+                <h4>7. Interest and Late Fee</h4>
+                <div className="gstr3b-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Details</th>
+                        <th>Integrated Tax</th>
+                        <th>Central Tax</th>
+                        <th>State/UT Tax</th>
+                        <th>Cess</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Interest on delayed payment</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                      </tr>
+                      <tr>
+                        <td>Late fee</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Section 8 - Payment of Tax */}
+              <div className="gstr3b-table-section">
+                <h4>8. Payment of Tax</h4>
+                <div className="gstr3b-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Details</th>
+                        <th>Integrated Tax</th>
+                        <th>Central Tax</th>
+                        <th>State/UT Tax</th>
+                        <th>Cess</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Tax Payable</td>
+                        <td>₹{Math.max(0, reportData.taxSummary.totalIGST - reportData.itcSummary.igstITC).toFixed(2)}</td>
+                        <td>₹{Math.max(0, reportData.taxSummary.totalCGST - reportData.itcSummary.cgstITC).toFixed(2)}</td>
+                        <td>₹{Math.max(0, reportData.taxSummary.totalSGST - reportData.itcSummary.sgstITC).toFixed(2)}</td>
+                        <td>₹{Math.max(0, reportData.taxSummary.totalCess - reportData.itcSummary.cessITC).toFixed(2)}</td>
+                      </tr>
+                      <tr>
+                        <td>Interest</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                      </tr>
+                      <tr>
+                        <td>Late fee</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                        <td>₹0.00</td>
+                      </tr>
+                      <tr className="total-row">
+                        <td>Total</td>
+                        <td>₹{Math.max(0, reportData.taxSummary.totalIGST - reportData.itcSummary.igstITC).toFixed(2)}</td>
+                        <td>₹{Math.max(0, reportData.taxSummary.totalCGST - reportData.itcSummary.cgstITC).toFixed(2)}</td>
+                        <td>₹{Math.max(0, reportData.taxSummary.totalSGST - reportData.itcSummary.sgstITC).toFixed(2)}</td>
+                        <td>₹{Math.max(0, reportData.taxSummary.totalCess - reportData.itcSummary.cessITC).toFixed(2)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -556,30 +816,180 @@ const ReportPage = ({ selectedClient, selectedMonth }) => {
         {activeSection === 'itc' && (
           <div className="itc-section">
             <h3>Input Tax Credit Summary</h3>
-            <div className="itc-cards">
+            
+            {/* Outward GST Summary */}
+            <div className="itc-subsection">
+              <h4>Outward GST Tax Liability</h4>
+              <div className="outward-gst-grid">
+                <div className="gst-card">
+                  <div className="gst-label">CGST Payable</div>
+                  <div className="gst-value">₹{reportData.taxSummary.totalCGST.toFixed(2)}</div>
+                </div>
+                <div className="gst-card">
+                  <div className="gst-label">SGST Payable</div>
+                  <div className="gst-value">₹{reportData.taxSummary.totalSGST.toFixed(2)}</div>
+                </div>
+                <div className="gst-card">
+                  <div className="gst-label">IGST Payable</div>
+                  <div className="gst-value">₹{reportData.taxSummary.totalIGST.toFixed(2)}</div>
+                </div>
+                <div className="gst-card total">
+                  <div className="gst-label">Total Tax Liability</div>
+                  <div className="gst-value">₹{reportData.taxSummary.totalTaxLiability.toFixed(2)}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Inward Supply ITC Details */}
+            <div className="itc-subsection">
+              <h4>Inward Supply ITC Details</h4>
+              <div className="inward-itc-grid">
               <div className="itc-card">
                 <div className="card-label">Total ITC Available</div>
                 <div className="card-value">₹{reportData.itcSummary.totalITC.toFixed(2)}</div>
+                  <div className="card-breakdown">
+                    <div className="breakdown-item">
+                      <span>CGST ITC:</span>
+                      <span>₹{reportData.itcSummary.cgstITC.toFixed(2)}</span>
+                    </div>
+                    <div className="breakdown-item">
+                      <span>SGST ITC:</span>
+                      <span>₹{reportData.itcSummary.sgstITC.toFixed(2)}</span>
+                    </div>
+                    <div className="breakdown-item">
+                      <span>IGST ITC:</span>
+                      <span>₹{reportData.itcSummary.igstITC.toFixed(2)}</span>
+                    </div>
+                    <div className="breakdown-item">
+                      <span>Cess ITC:</span>
+                      <span>₹{reportData.itcSummary.cessITC.toFixed(2)}</span>
+                    </div>
+                  </div>
               </div>
+                
               <div className="itc-card">
-                <div className="card-label">CGST ITC</div>
-                <div className="card-value">₹{reportData.itcSummary.cgstITC.toFixed(2)}</div>
+                  <div className="card-label">ITC Utilized</div>
+                  <div className="card-value">₹{reportData.itcSummary.utilizedITC.toFixed(2)}</div>
+                  <div className="card-breakdown">
+                    <div className="breakdown-item">
+                      <span>Against CGST:</span>
+                      <span>₹{Math.min(reportData.itcSummary.cgstITC, reportData.taxSummary.totalCGST).toFixed(2)}</span>
+                    </div>
+                    <div className="breakdown-item">
+                      <span>Against SGST:</span>
+                      <span>₹{Math.min(reportData.itcSummary.sgstITC, reportData.taxSummary.totalSGST).toFixed(2)}</span>
+                    </div>
+                    <div className="breakdown-item">
+                      <span>Against IGST:</span>
+                      <span>₹{Math.min(reportData.itcSummary.igstITC, reportData.taxSummary.totalIGST).toFixed(2)}</span>
+                    </div>
+                    <div className="breakdown-item">
+                      <span>Against Cess:</span>
+                      <span>₹{Math.min(reportData.itcSummary.cessITC, reportData.taxSummary.totalCess).toFixed(2)}</span>
+                    </div>
+                  </div>
               </div>
+                
               <div className="itc-card">
-                <div className="card-label">SGST ITC</div>
-                <div className="card-value">₹{reportData.itcSummary.sgstITC.toFixed(2)}</div>
+                  <div className="card-label">ITC Balance</div>
+                  <div className="card-value">₹{reportData.itcSummary.carryForwardITC.toFixed(2)}</div>
+                  <div className="card-breakdown">
+                    <div className="breakdown-item">
+                      <span>CGST Balance:</span>
+                      <span>₹{Math.max(0, reportData.itcSummary.cgstITC - reportData.taxSummary.totalCGST).toFixed(2)}</span>
+                    </div>
+                    <div className="breakdown-item">
+                      <span>SGST Balance:</span>
+                      <span>₹{Math.max(0, reportData.itcSummary.sgstITC - reportData.taxSummary.totalSGST).toFixed(2)}</span>
+                    </div>
+                    <div className="breakdown-item">
+                      <span>IGST Balance:</span>
+                      <span>₹{Math.max(0, reportData.itcSummary.igstITC - reportData.taxSummary.totalIGST).toFixed(2)}</span>
+                    </div>
+                    <div className="breakdown-item">
+                      <span>Cess Balance:</span>
+                      <span>₹{Math.max(0, reportData.itcSummary.cessITC - reportData.taxSummary.totalCess).toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="itc-card">
-                <div className="card-label">IGST ITC</div>
-                <div className="card-value">₹{reportData.itcSummary.igstITC.toFixed(2)}</div>
+            </div>
+
+            {/* ITC Utilization Summary */}
+            <div className="itc-subsection">
+              <h4>ITC Utilization Summary</h4>
+              <div className="utilization-summary">
+                <div className="util-item">
+                  <div className="util-label">Total Tax Liability</div>
+                  <div className="util-value">₹{reportData.taxSummary.totalTaxLiability.toFixed(2)}</div>
+                </div>
+                <div className="util-item">
+                  <div className="util-label">ITC Available</div>
+                  <div className="util-value">₹{reportData.itcSummary.totalITC.toFixed(2)}</div>
+                </div>
+                <div className="util-item">
+                  <div className="util-label">ITC Utilized</div>
+                  <div className="util-value">₹{reportData.itcSummary.utilizedITC.toFixed(2)}</div>
+                </div>
+                <div className="util-item">
+                  <div className="util-label">Net Tax Payable</div>
+                  <div className="util-value">₹{Math.max(0, reportData.taxSummary.totalTaxLiability - reportData.itcSummary.totalITC).toFixed(2)}</div>
+                </div>
+                <div className="util-item">
+                  <div className="util-label">ITC Carry Forward</div>
+                  <div className="util-value">₹{reportData.itcSummary.carryForwardITC.toFixed(2)}</div>
+                </div>
               </div>
-              <div className="itc-card">
-                <div className="card-label">Utilized ITC</div>
-                <div className="card-value">₹{reportData.itcSummary.utilizedITC.toFixed(2)}</div>
               </div>
-              <div className="itc-card">
-                <div className="card-label">Carry Forward</div>
-                <div className="card-value">₹{reportData.itcSummary.carryForwardITC.toFixed(2)}</div>
+
+            {/* Detailed ITC Table */}
+            <div className="itc-subsection">
+              <h4>Detailed ITC Breakdown by Purchase</h4>
+              <div className="itc-details-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Invoice No.</th>
+                      <th>Supplier</th>
+                      <th>Invoice Date</th>
+                      <th>Taxable Value</th>
+                      <th>CGST ITC</th>
+                      <th>SGST ITC</th>
+                      <th>IGST ITC</th>
+                      <th>Cess ITC</th>
+                      <th>Total ITC</th>
+                      <th>ITC Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reportData.purchases.map((purchase, index) => {
+                      const cgstITC = purchase.itcEligible !== false ? parseFloat(purchase.centralTax || 0) : 0;
+                      const sgstITC = purchase.itcEligible !== false ? parseFloat(purchase.stateTax || 0) : 0;
+                      const igstITC = purchase.itcEligible !== false ? parseFloat(purchase.integratedTax || 0) : 0;
+                      const cessITC = purchase.itcEligible !== false ? parseFloat(purchase.cess || 0) : 0;
+                      const totalITC = cgstITC + sgstITC + igstITC + cessITC;
+                      
+                      return (
+                        <tr key={index}>
+                          <td>{purchase.invoiceNumber}</td>
+                          <td>{purchase.supplierName}</td>
+                          <td>{purchase.invoiceDate}</td>
+                          <td>₹{parseFloat(purchase.taxableValue || 0).toFixed(2)}</td>
+                          <td>₹{cgstITC.toFixed(2)}</td>
+                          <td>₹{sgstITC.toFixed(2)}</td>
+                          <td>₹{igstITC.toFixed(2)}</td>
+                          <td>₹{cessITC.toFixed(2)}</td>
+                          <td>₹{totalITC.toFixed(2)}</td>
+                          <td>
+                            <span className={`itc-status ${purchase.itcEligible !== false ? 'eligible' : 'ineligible'}`}>
+                              {purchase.itcEligible !== false ? 'Eligible' : 'Ineligible'}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

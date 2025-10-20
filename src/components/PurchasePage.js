@@ -35,7 +35,7 @@ const PurchasePage = ({ selectedClients, selectedMonth }) => {
   const [isFetchingPurchases, setIsFetchingPurchases] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingEntry, setEditingEntry] = useState(null);
-  const [groupBySupplier, setGroupBySupplier] = useState(true);
+  const [groupBySupplier, setGroupBySupplier] = useState(false);
   const [collapsedSuppliers, setCollapsedSuppliers] = useState({});
   const [newEntry, setNewEntry] = useState({
     supplierGSTIN: '',
@@ -62,6 +62,19 @@ const PurchasePage = ({ selectedClients, selectedMonth }) => {
       loadPurchasesFromDatabase();
     }
   }, [selectedClients, selectedMonth]);
+
+  // Set all suppliers as collapsed by default when group view is enabled
+  useEffect(() => {
+    if (groupBySupplier && purchaseEntries.length > 0) {
+      const groupedSuppliers = groupEntriesBySupplier();
+      const defaultCollapsedState = {};
+      groupedSuppliers.forEach(supplier => {
+        const supplierKey = `${supplier.supplierGSTIN}_${supplier.supplierName}`;
+        defaultCollapsedState[supplierKey] = true; // All collapsed by default
+      });
+      setCollapsedSuppliers(defaultCollapsedState);
+    }
+  }, [groupBySupplier, purchaseEntries]);
 
   const formatMonthYear = (monthYear) => {
     const [year, month] = monthYear.split('-');
@@ -957,7 +970,7 @@ const PurchasePage = ({ selectedClients, selectedMonth }) => {
               onClick={() => setGroupBySupplier(!groupBySupplier)}
             >
               <Users size={16} />
-              <span>{groupBySupplier ? 'Grouped' : 'List View'}</span>
+              <span>{groupBySupplier ? 'Group Wise' : 'List View'}</span>
             </button>
             <button className="export-btn-simple">
               <Download size={16} />
@@ -1017,7 +1030,7 @@ const PurchasePage = ({ selectedClients, selectedMonth }) => {
                   </td>
                 </tr>
               ) : groupBySupplier ? (
-                // Grouped by supplier view
+                // Simple Grouped by supplier view
                 groupedSuppliers.map((supplier) => {
                   const supplierKey = `${supplier.supplierGSTIN}_${supplier.supplierName}`;
                   const isCollapsed = collapsedSuppliers[supplierKey];
@@ -1025,9 +1038,9 @@ const PurchasePage = ({ selectedClients, selectedMonth }) => {
                   return (
                     <React.Fragment key={supplierKey}>
                       {/* Simple Supplier Group Header */}
-                      <tr className="supplier-group-header">
+                      <tr className="supplier-group-header-simple">
                         <td colSpan="11">
-                          <div className="supplier-group-simple">
+                          <div className="supplier-group-content-simple">
                             <button 
                               className="collapse-btn-simple"
                               onClick={() => toggleSupplierGroup(supplierKey)}

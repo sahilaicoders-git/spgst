@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Calendar, ArrowRight } from 'lucide-react';
 import './MonthSelectionDialog.css';
 
 const MonthSelectionDialog = ({ isOpen, onClose, onConfirm, selectedClients }) => {
   const [selectedMonthYear, setSelectedMonthYear] = useState('');
+  const [focusedIndex, setFocusedIndex] = useState(0);
+  const selectRef = useRef(null);
+  const dialogRef = useRef(null);
 
   // Get current financial year months
   const generateFYMonthOptions = () => {
@@ -46,7 +49,7 @@ const MonthSelectionDialog = ({ isOpen, onClose, onConfirm, selectedClients }) =
 
   const monthOptions = generateFYMonthOptions();
 
-  // Set default to current month
+  // Set default to current month and focus management
   useEffect(() => {
     if (isOpen && !selectedMonthYear) {
       const today = new Date();
@@ -54,6 +57,17 @@ const MonthSelectionDialog = ({ isOpen, onClose, onConfirm, selectedClients }) =
       const currentMonth = String(today.getMonth() + 1).padStart(2, '0');
       const defaultValue = `${currentYear}-${currentMonth}`;
       setSelectedMonthYear(defaultValue);
+      
+      // Find the index of the current month in the options
+      const currentIndex = monthOptions.findIndex(option => option.value === defaultValue);
+      setFocusedIndex(currentIndex >= 0 ? currentIndex : 0);
+    }
+    
+    // Focus the select element when dialog opens
+    if (isOpen && selectRef.current) {
+      setTimeout(() => {
+        selectRef.current.focus();
+      }, 100);
     }
   }, [isOpen, selectedMonthYear]);
 
@@ -64,9 +78,56 @@ const MonthSelectionDialog = ({ isOpen, onClose, onConfirm, selectedClients }) =
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleConfirm();
+  const handleKeyDown = (e) => {
+    switch (e.key) {
+      case 'Enter':
+        e.preventDefault();
+        handleConfirm();
+        break;
+      case 'Escape':
+        e.preventDefault();
+        onClose();
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setFocusedIndex(prev => {
+          const newIndex = prev > 0 ? prev - 1 : monthOptions.length - 1;
+          setSelectedMonthYear(monthOptions[newIndex].value);
+          return newIndex;
+        });
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        setFocusedIndex(prev => {
+          const newIndex = prev < monthOptions.length - 1 ? prev + 1 : 0;
+          setSelectedMonthYear(monthOptions[newIndex].value);
+          return newIndex;
+        });
+        break;
+      case 'Home':
+        e.preventDefault();
+        setFocusedIndex(0);
+        setSelectedMonthYear(monthOptions[0].value);
+        break;
+      case 'End':
+        e.preventDefault();
+        const lastIndex = monthOptions.length - 1;
+        setFocusedIndex(lastIndex);
+        setSelectedMonthYear(monthOptions[lastIndex].value);
+        break;
+      default:
+        // Allow typing to search for months
+        if (e.key.length === 1) {
+          const searchChar = e.key.toLowerCase();
+          const matchingIndex = monthOptions.findIndex(option => 
+            option.label.toLowerCase().startsWith(searchChar)
+          );
+          if (matchingIndex !== -1) {
+            setFocusedIndex(matchingIndex);
+            setSelectedMonthYear(monthOptions[matchingIndex].value);
+          }
+        }
+        break;
     }
   };
 
@@ -90,7 +151,7 @@ const MonthSelectionDialog = ({ isOpen, onClose, onConfirm, selectedClients }) =
 
   return (
     <div className="month-dialog-overlay">
-      <div className="month-dialog">
+      <div className="month-dialog" ref={dialogRef}>
         <div className="dialog-header">
           <div className="dialog-title">
             <Calendar className="title-icon" />
@@ -109,6 +170,9 @@ const MonthSelectionDialog = ({ isOpen, onClose, onConfirm, selectedClients }) =
             <p className="instruction-text">
               Please select the month from the current financial year to proceed.
             </p>
+            <div className="keyboard-hints">
+              <span>Use ↑↓ arrows to navigate, Enter to confirm, Escape to cancel</span>
+            </div>
           </div>
 
           <div className="month-year-selection">
@@ -118,10 +182,12 @@ const MonthSelectionDialog = ({ isOpen, onClose, onConfirm, selectedClients }) =
               </label>
               <select
                 id="month-year-select"
+                ref={selectRef}
                 value={selectedMonthYear}
                 onChange={(e) => setSelectedMonthYear(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyDown}
                 className="month-year-select"
+                tabIndex={0}
               >
                 <option value="">Select Month</option>
                 {monthOptions.map(option => (

@@ -5,7 +5,7 @@ import MainApplication from './components/MainApplication';
 import Header from './components/Header';
 import FloatingITCBar from './components/FloatingITCBar';
 import { ClientProvider } from './context/ClientContext';
-import { Users } from 'lucide-react';
+// Removed Users import as we're using the SP-GST logo instead
 import './App.css';
 
 function App() {
@@ -64,7 +64,11 @@ function App() {
           <div className={`splash-screen ${!showSplash ? 'fade-out' : ''}`}>
             <div className="splash-content">
               <div className="splash-logo">
-                <Users className="splash-icon" />
+                <img 
+                  src="/spgsticon.png" 
+                  alt="SP-GST Logo" 
+                  className="splash-logo-img"
+                />
               </div>
               <h1 className="splash-title">GST Software</h1>
               <div className="splash-subtitle">Professional GST Management</div>

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Building, Upload, FileSpreadsheet } from 'lucide-react';
+import { Building, Upload, FileSpreadsheet, Edit, Trash2, Save, X } from 'lucide-react';
 import './B2BSales.css';
 import ClientDatabaseManager from '../utils/ClientDatabaseManager';
 
@@ -7,6 +7,9 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
   const [isImporting, setIsImporting] = useState(false);
   const [dbB2BEntries, setDbB2BEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingEntry, setEditingEntry] = useState(null);
+  const [editFormData, setEditFormData] = useState({});
   const fileInputRef = useRef(null);
   const dbManager = new ClientDatabaseManager();
 
@@ -230,6 +233,82 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
     return summary;
   };
 
+  // Handle edit entry
+  const handleEditEntry = (entry) => {
+    setEditingEntry(entry);
+    setEditFormData({
+      customerGSTIN: entry.customerGSTIN || '',
+      customerName: entry.customerName || '',
+      invoiceNumber: entry.invoiceNumber || '',
+      invoiceDate: entry.invoiceDate || '',
+      invoiceType: entry.invoiceType || 'Regular B2B',
+      invoiceValue: entry.invoiceValue || '',
+      taxableValue: entry.taxableValue || '',
+      centralTax: entry.centralTax || '',
+      stateTax: entry.stateTax || '',
+      integratedTax: entry.integratedTax || '',
+      cess: entry.cess || entry.cessAmount || '',
+      taxRate: entry.taxRate || '',
+      placeOfSupply: entry.placeOfSupply || '',
+      reverseCharge: entry.reverseCharge || 'N'
+    });
+    setShowEditModal(true);
+  };
+
+  // Handle update entry
+  const handleUpdateEntry = async () => {
+    if (!editingEntry || !selectedClient) return;
+
+    try {
+      const updatedData = {
+        ...editFormData,
+        month: selectedMonth,
+        transactionType: 'B2B'
+      };
+
+      await dbManager.updateClientSale(selectedClient.id, editingEntry.id, updatedData);
+      
+      // Reload data from database
+      await loadB2BSalesFromDB();
+      
+      // Close modal
+      setShowEditModal(false);
+      setEditingEntry(null);
+      setEditFormData({});
+      
+      alert('B2B entry updated successfully!');
+    } catch (error) {
+      console.error('Error updating B2B entry:', error);
+      alert('Error updating entry. Please try again.');
+    }
+  };
+
+  // Handle delete entry
+  const handleDeleteEntry = async (entryId) => {
+    if (!selectedClient) return;
+    
+    if (window.confirm('Are you sure you want to delete this B2B entry?')) {
+      try {
+        await dbManager.deleteClientSale(selectedClient.id, entryId);
+        
+        // Reload data from database
+        await loadB2BSalesFromDB();
+        
+        alert('B2B entry deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting B2B entry:', error);
+        alert('Error deleting entry. Please try again.');
+      }
+    }
+  };
+
+  // Close edit modal
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setEditingEntry(null);
+    setEditFormData({});
+  };
+
   const summary = getB2BSummary();
 
   return (
@@ -322,12 +401,13 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
                 <th>IGST</th>
                 <th>Cess</th>
                 <th>Invoice Value</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {b2bEntries.length === 0 ? (
                 <tr>
-                  <td colSpan="13" className="no-data">
+                  <td colSpan="14" className="no-data">
                     {isLoading ? 'Loading B2B transactions...' : 'No B2B transactions found'}
                   </td>
                 </tr>
@@ -347,6 +427,24 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
                     <td>₹{parseFloat(entry.integratedTax || 0).toFixed(2)}</td>
                     <td>₹{parseFloat(entry.cess || entry.cessAmount || 0).toFixed(2)}</td>
                     <td>₹{parseFloat(entry.invoiceValue || 0).toFixed(2)}</td>
+                    <td>
+                      <div className="action-buttons">
+                        <button 
+                          className="edit-btn"
+                          onClick={() => handleEditEntry(entry)}
+                          title="Edit Entry"
+                        >
+                          <Edit size={14} />
+                        </button>
+                        <button 
+                          className="delete-btn"
+                          onClick={() => handleDeleteEntry(entry.id)}
+                          title="Delete Entry"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}
@@ -360,11 +458,191 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
                 <td><strong>₹{summary.totalIGST.toFixed(2)}</strong></td>
                 <td><strong>₹{summary.totalTax.toFixed(2)}</strong></td>
                 <td><strong>₹{summary.totalInvoiceValue.toFixed(2)}</strong></td>
+                <td><strong>-</strong></td>
               </tr>
             </tfoot>
           </table>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>Edit B2B Entry</h3>
+              <button className="close-btn" onClick={closeEditModal}>
+                <X />
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Customer GSTIN</label>
+                  <input
+                    type="text"
+                    value={editFormData.customerGSTIN}
+                    onChange={(e) => setEditFormData({...editFormData, customerGSTIN: e.target.value})}
+                    placeholder="Customer GSTIN"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Customer Name *</label>
+                  <input
+                    type="text"
+                    value={editFormData.customerName}
+                    onChange={(e) => setEditFormData({...editFormData, customerName: e.target.value})}
+                    placeholder="Customer Name"
+                    required
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Invoice Number *</label>
+                  <input
+                    type="text"
+                    value={editFormData.invoiceNumber}
+                    onChange={(e) => setEditFormData({...editFormData, invoiceNumber: e.target.value})}
+                    placeholder="Invoice Number"
+                    required
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Invoice Date</label>
+                  <input
+                    type="date"
+                    value={editFormData.invoiceDate}
+                    onChange={(e) => setEditFormData({...editFormData, invoiceDate: e.target.value})}
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Invoice Type</label>
+                  <select
+                    value={editFormData.invoiceType}
+                    onChange={(e) => setEditFormData({...editFormData, invoiceType: e.target.value})}
+                  >
+                    <option value="Regular B2B">Regular B2B</option>
+                    <option value="Debit Note">Debit Note</option>
+                    <option value="Credit Note">Credit Note</option>
+                  </select>
+                </div>
+                
+                <div className="form-group">
+                  <label>Invoice Value (₹)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editFormData.invoiceValue}
+                    onChange={(e) => setEditFormData({...editFormData, invoiceValue: e.target.value})}
+                    placeholder="0.00"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Taxable Value (₹)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editFormData.taxableValue}
+                    onChange={(e) => setEditFormData({...editFormData, taxableValue: e.target.value})}
+                    placeholder="0.00"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>CGST (₹)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editFormData.centralTax}
+                    onChange={(e) => setEditFormData({...editFormData, centralTax: e.target.value})}
+                    placeholder="0.00"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>SGST (₹)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editFormData.stateTax}
+                    onChange={(e) => setEditFormData({...editFormData, stateTax: e.target.value})}
+                    placeholder="0.00"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>IGST (₹)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editFormData.integratedTax}
+                    onChange={(e) => setEditFormData({...editFormData, integratedTax: e.target.value})}
+                    placeholder="0.00"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Cess (₹)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editFormData.cess}
+                    onChange={(e) => setEditFormData({...editFormData, cess: e.target.value})}
+                    placeholder="0.00"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Tax Rate (%)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editFormData.taxRate}
+                    onChange={(e) => setEditFormData({...editFormData, taxRate: e.target.value})}
+                    placeholder="0.00"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Place of Supply</label>
+                  <input
+                    type="text"
+                    value={editFormData.placeOfSupply}
+                    onChange={(e) => setEditFormData({...editFormData, placeOfSupply: e.target.value})}
+                    placeholder="Place of Supply"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Reverse Charge</label>
+                  <select
+                    value={editFormData.reverseCharge}
+                    onChange={(e) => setEditFormData({...editFormData, reverseCharge: e.target.value})}
+                  >
+                    <option value="N">No</option>
+                    <option value="Y">Yes</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={closeEditModal}>
+                Cancel
+              </button>
+              <button className="btn-primary" onClick={handleUpdateEntry}>
+                <Save />
+                Update Entry
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
