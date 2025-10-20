@@ -78,7 +78,10 @@ function App() {
         {/* Main Application */}
         {!showSplash && (
           <>
-            <Header onAddClient={handleAddClient} />
+            {/* Header - only show when not in main app */}
+            {currentView !== 'mainApp' && (
+              <Header onAddClient={handleAddClient} />
+            )}
             <main className="main-content">
               {currentView === 'clientList' && (
                 <ClientList onOpenMainApp={handleOpenMainApp} />
