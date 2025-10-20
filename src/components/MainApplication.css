@@ -43,9 +43,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
+  background: rgba(248, 250, 252, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
 }
 
 .top-bar-content {
@@ -374,9 +379,9 @@
 .main-content {
   flex: 1;
   padding: 24px;
+  padding-top: 120px; /* Account for fixed top bar */
   overflow-y: auto;
   position: relative;
-  margin-top: 20px;
 }
 
 /* Home Content */
@@ -1032,7 +1037,7 @@
   
   .main-content {
     padding: 16px;
-    margin-top: 16px;
+    padding-top: 100px; /* Account for fixed top bar on mobile */
   }
   
   .hero-section {
@@ -1132,7 +1137,7 @@
   
   .main-content {
     padding: 12px;
-    margin-top: 12px;
+    padding-top: 90px; /* Account for fixed top bar on small mobile */
   }
   
   .hero-section {
