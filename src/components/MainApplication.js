@@ -27,6 +27,7 @@ const MainApplication = ({ selectedClients, selectedMonth, onBack }) => {
   const [activeTab, setActiveTab] = useState('home');
   const [isAnimating, setIsAnimating] = useState(true);
   const [currentMonth, setCurrentMonth] = useState(selectedMonth);
+  const [settingsTab, setSettingsTab] = useState('general'); // For settings sub-tabs
   const [appData, setAppData] = useState({
     clients: selectedClients,
     month: currentMonth,
@@ -353,12 +354,131 @@ const MainApplication = ({ selectedClients, selectedMonth, onBack }) => {
 
   const renderSettings = () => (
     <div className="tab-content">
+      <div className="settings-container">
+        <div className="settings-header">
       <h2>Settings & Configuration</h2>
       <p>Configure application settings and preferences</p>
-      <div className="feature-placeholder">
-        <Settings size={48} />
-        <h3>Settings Module</h3>
-        <p>Application settings, user preferences, and system configuration will be implemented here.</p>
+        </div>
+        
+        <div className="settings-tabs">
+          <button 
+            className={`settings-tab ${settingsTab === 'general' ? 'active' : ''}`}
+            onClick={() => setSettingsTab('general')}
+          >
+            General
+          </button>
+          <button 
+            className={`settings-tab ${settingsTab === 'shortcuts' ? 'active' : ''}`}
+            onClick={() => setSettingsTab('shortcuts')}
+          >
+            Keyboard Shortcuts
+          </button>
+          <button 
+            className={`settings-tab ${settingsTab === 'about' ? 'active' : ''}`}
+            onClick={() => setSettingsTab('about')}
+          >
+            About
+          </button>
+        </div>
+        
+        <div className="settings-content">
+          {settingsTab === 'general' && (
+            <div className="settings-section">
+              <h3>General Settings</h3>
+              <div className="settings-group">
+                <label>Default Month</label>
+                <select className="settings-input">
+                  <option value="current">Current Month</option>
+                  <option value="previous">Previous Month</option>
+                </select>
+              </div>
+              <div className="settings-group">
+                <label>Theme</label>
+                <select className="settings-input">
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                  <option value="auto">Auto</option>
+                </select>
+              </div>
+            </div>
+          )}
+          
+          {settingsTab === 'shortcuts' && (
+            <div className="settings-section">
+              <h3>Keyboard Shortcuts</h3>
+              <div className="shortcuts-list">
+                <div className="shortcut-category">
+                  <h4>Navigation</h4>
+                  <div className="shortcut-item">
+                    <span className="shortcut-key">F1</span>
+                    <span className="shortcut-description">Home</span>
+                  </div>
+                  <div className="shortcut-item">
+                    <span className="shortcut-key">F2</span>
+                    <span className="shortcut-description">Purchase</span>
+                  </div>
+                  <div className="shortcut-item">
+                    <span className="shortcut-key">F3</span>
+                    <span className="shortcut-description">Sale</span>
+                  </div>
+                  <div className="shortcut-item">
+                    <span className="shortcut-key">F4</span>
+                    <span className="shortcut-description">Report</span>
+                  </div>
+                  <div className="shortcut-item">
+                    <span className="shortcut-key">F5</span>
+                    <span className="shortcut-description">GST</span>
+                  </div>
+                  <div className="shortcut-item">
+                    <span className="shortcut-key">F6</span>
+                    <span className="shortcut-description">Settings</span>
+                  </div>
+                </div>
+                
+                <div className="shortcut-category">
+                  <h4>General</h4>
+                  <div className="shortcut-item">
+                    <span className="shortcut-key">Esc</span>
+                    <span className="shortcut-description">Go Back to Client List</span>
+                  </div>
+                </div>
+                
+                <div className="shortcut-category">
+                  <h4>Client List</h4>
+                  <div className="shortcut-item">
+                    <span className="shortcut-key">↑↓</span>
+                    <span className="shortcut-description">Navigate between clients</span>
+                  </div>
+                  <div className="shortcut-item">
+                    <span className="shortcut-key">Enter</span>
+                    <span className="shortcut-description">Select/Deselect client</span>
+                  </div>
+                  <div className="shortcut-item">
+                    <span className="shortcut-key">Space</span>
+                    <span className="shortcut-description">Open main application</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {settingsTab === 'about' && (
+            <div className="settings-section">
+              <h3>About GST Software</h3>
+              <div className="about-content">
+                <div className="about-item">
+                  <strong>Version:</strong> 1.0.0
+                </div>
+                <div className="about-item">
+                  <strong>Description:</strong> Professional GST Management System
+                </div>
+                <div className="about-item">
+                  <strong>Features:</strong> B2B/B2C Sales, Purchase Management, HSN Summary, ITC Tracking, Reports
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -404,7 +524,6 @@ const MainApplication = ({ selectedClients, selectedMonth, onBack }) => {
                 >
                   <Icon className="nav-tab-icon" />
                   <span className="nav-tab-label">{tab.label}</span>
-                  <span className="nav-tab-shortcut">{tab.shortcut}</span>
                 </button>
               );
             })}
@@ -425,9 +544,6 @@ const MainApplication = ({ selectedClients, selectedMonth, onBack }) => {
                   : 'No Clients Selected'
               }
             </h1>
-            <div className="keyboard-hints">
-              <span>F1-F6: Tabs | Esc: Back</span>
-            </div>
             <div className="month-selector-wrapper">
               <Calendar size={16} className="calendar-icon" />
               <select 
