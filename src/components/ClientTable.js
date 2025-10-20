@@ -1,28 +1,13 @@
-import React, { useEffect, useRef } from 'react';
-import { Calendar, Building, Hash, ArrowUp, ArrowDown } from 'lucide-react';
+import React from 'react';
+import { Calendar, Building, Hash } from 'lucide-react';
 import './ClientTable.css';
 
 const ClientTable = ({ 
   clients, 
   selectedClients, 
-  focusedIndex,
   onSelectClient, 
-  onSelectAll, 
-  sortBy, 
-  sortOrder, 
-  onSortChange 
+  onSelectAll
 }) => {
-  const focusedRowRef = useRef(null);
-
-  // Auto-scroll to focused row
-  useEffect(() => {
-    if (focusedRowRef.current) {
-      focusedRowRef.current.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'center' 
-      });
-    }
-  }, [focusedIndex]);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
@@ -32,22 +17,6 @@ const ClientTable = ({
     });
   };
 
-  const SortableHeader = ({ field, children }) => (
-    <th 
-      className={`sortable-header ${sortBy === field ? 'active' : ''}`}
-      onClick={() => onSortChange(field)}
-      title={`Sort by ${children}`}
-    >
-      <div className="header-content">
-        <span className="header-label">{children}</span>
-        {sortBy === field && (
-          <span className="sort-indicator">
-            {sortOrder === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
-          </span>
-        )}
-      </div>
-    </th>
-  );
 
   return (
     <div className="client-table-container">
@@ -63,20 +32,19 @@ const ClientTable = ({
                   className="select-all-checkbox"
                 />
               </th>
-              <SortableHeader field="clientName">Client Name</SortableHeader>
-              <SortableHeader field="businessName">Business</SortableHeader>
-              <SortableHeader field="gstType">GST Type</SortableHeader>
-              <SortableHeader field="gstNo">GST Number</SortableHeader>
-              <SortableHeader field="returnFrequency">Frequency</SortableHeader>
-              <SortableHeader field="createdAt">Created</SortableHeader>
+              <th>Client Name</th>
+              <th>Business</th>
+              <th>GST Type</th>
+              <th>GST Number</th>
+              <th>Frequency</th>
+              <th>Created</th>
             </tr>
           </thead>
           <tbody>
-            {clients.map((client, index) => (
+            {clients.map((client) => (
               <tr 
                 key={client.id} 
-                ref={focusedIndex === index ? focusedRowRef : null}
-                className={`client-row ${selectedClients.includes(client.id) ? 'selected' : ''} ${focusedIndex === index ? 'focused' : ''}`}
+                className={`client-row ${selectedClients.includes(client.id) ? 'selected' : ''}`}
                 onClick={() => onSelectClient(client.id)}
               >
                 <td className="select-cell" onClick={(e) => e.stopPropagation()}>
