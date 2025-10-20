@@ -5,6 +5,7 @@ import './ClientTable.css';
 const ClientTable = ({ 
   clients, 
   selectedClients, 
+  focusedIndex,
   onSelectClient, 
   onSelectAll
 }) => {
@@ -41,10 +42,10 @@ const ClientTable = ({
             </tr>
           </thead>
           <tbody>
-            {clients.map((client) => (
+            {clients.map((client, index) => (
               <tr 
                 key={client.id} 
-                className={`client-row ${selectedClients.includes(client.id) ? 'selected' : ''}`}
+                className={`client-row ${selectedClients.includes(client.id) ? 'selected' : ''} ${focusedIndex === index ? 'focused' : ''}`}
                 onClick={() => onSelectClient(client.id)}
               >
                 <td className="select-cell" onClick={(e) => e.stopPropagation()}>
