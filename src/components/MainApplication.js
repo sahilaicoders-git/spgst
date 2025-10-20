@@ -124,13 +124,41 @@ const MainApplication = ({ selectedClients, selectedMonth, onBack }) => {
     }));
   }, [currentMonth]);
 
+  // Keyboard shortcuts for tabs
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const { key } = event;
+      
+      // Handle function keys F1-F6
+      if (key.startsWith('F') && key.length === 2) {
+        const functionKey = parseInt(key.substring(1));
+        if (functionKey >= 1 && functionKey <= 6) {
+          event.preventDefault();
+          const tabIndex = functionKey - 1;
+          if (tabs[tabIndex]) {
+            setActiveTab(tabs[tabIndex].id);
+          }
+        }
+      }
+      
+      // Handle Escape key to go back
+      if (key === 'Escape') {
+        event.preventDefault();
+        onBack();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onBack]);
+
   const tabs = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'purchase', label: 'Purchase', icon: ShoppingCart },
-    { id: 'sale', label: 'Sale', icon: TrendingUp },
-    { id: 'report', label: 'Report', icon: FileText },
-    { id: 'gst', label: 'GST', icon: Percent },
-    { id: 'settings', label: 'Settings', icon: Settings }
+    { id: 'home', label: 'Home', icon: Home, shortcut: 'F1' },
+    { id: 'purchase', label: 'Purchase', icon: ShoppingCart, shortcut: 'F2' },
+    { id: 'sale', label: 'Sale', icon: TrendingUp, shortcut: 'F3' },
+    { id: 'report', label: 'Report', icon: FileText, shortcut: 'F4' },
+    { id: 'gst', label: 'GST', icon: Percent, shortcut: 'F5' },
+    { id: 'settings', label: 'Settings', icon: Settings, shortcut: 'F6' }
   ];
 
   const renderHome = () => (
@@ -372,9 +400,11 @@ const MainApplication = ({ selectedClients, selectedMonth, onBack }) => {
                   key={tab.id}
                   className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
                   onClick={() => setActiveTab(tab.id)}
+                  title={`${tab.label} (${tab.shortcut})`}
                 >
                   <Icon className="nav-tab-icon" />
                   <span className="nav-tab-label">{tab.label}</span>
+                  <span className="nav-tab-shortcut">{tab.shortcut}</span>
                 </button>
               );
             })}
@@ -395,6 +425,9 @@ const MainApplication = ({ selectedClients, selectedMonth, onBack }) => {
                   : 'No Clients Selected'
               }
             </h1>
+            <div className="keyboard-hints">
+              <span>F1-F6: Tabs | Esc: Back</span>
+            </div>
             <div className="month-selector-wrapper">
               <Calendar size={16} className="calendar-icon" />
               <select 
