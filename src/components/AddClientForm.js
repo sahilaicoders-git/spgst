@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, User, Building, Calendar, Hash, MapPin, Phone, RotateCcw, CheckCircle } from 'lucide-react';
+import { ArrowLeft, User, Building, Calendar, Hash, MapPin, Phone, RotateCcw, CheckCircle } from 'lucide-react';
 import { useClient } from '../context/ClientContext';
 import './AddClientForm.css';
 
@@ -127,8 +127,15 @@ const AddClientForm = ({ onClose }) => {
 
   if (isSuccess) {
     return (
-      <div className="form-overlay">
-        <div className="success-modal">
+      <div className="add-client-page">
+        <div className="page-header">
+          <button className="back-btn" onClick={onClose}>
+            <ArrowLeft />
+            Back to Client List
+          </button>
+          <h1>Add New Client</h1>
+        </div>
+        <div className="success-container">
           <div className="success-icon">
             <CheckCircle />
           </div>
@@ -140,14 +147,17 @@ const AddClientForm = ({ onClose }) => {
   }
 
   return (
-    <div className="form-overlay">
-      <div className="minimal-form">
-        <div className="form-header">
-          <h2>Add New Client</h2>
-          <button className="close-btn" onClick={onClose}>
-            <X />
-          </button>
-        </div>
+    <div className="add-client-page">
+      <div className="page-header">
+        <button className="back-btn" onClick={onClose}>
+          <ArrowLeft />
+          Back to Client List
+        </button>
+        <h1>Add New Client</h1>
+      </div>
+      
+      <div className="form-container">
+        <div className="form-card">
 
         <form onSubmit={handleSubmit} className="client-form">
           <div className="form-group">
@@ -263,16 +273,15 @@ const AddClientForm = ({ onClose }) => {
 
           <div className="form-actions">
             <button type="button" className="btn btn-secondary" onClick={handleReset}>
+              <RotateCcw size={16} />
               Reset
-            </button>
-            <button type="button" className="btn btn-outline" onClick={onClose}>
-              Cancel
             </button>
             <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
               {isSubmitting ? 'Adding...' : 'Add Client'}
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );

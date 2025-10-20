@@ -9,8 +9,7 @@ import { Users } from 'lucide-react';
 import './App.css';
 
 function App() {
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [currentView, setCurrentView] = useState('clientList'); // 'clientList' or 'mainApp'
+  const [currentView, setCurrentView] = useState('clientList'); // 'clientList', 'addClient', or 'mainApp'
   const [mainAppData, setMainAppData] = useState(null);
   const [showSplash, setShowSplash] = useState(true);
 
@@ -26,7 +25,7 @@ function App() {
   useEffect(() => {
     // Listen for menu events
     const handleMenuNewClient = () => {
-      setShowAddForm(true);
+      setCurrentView('addClient');
     };
 
     window.addEventListener('menu-new-client', handleMenuNewClient);
@@ -37,11 +36,11 @@ function App() {
   }, []);
 
   const handleAddClient = () => {
-    setShowAddForm(true);
+    setCurrentView('addClient');
   };
 
   const handleCloseForm = () => {
-    setShowAddForm(false);
+    setCurrentView('clientList');
   };
 
   const handleOpenMainApp = (selectedClients, selectedMonth) => {
@@ -79,29 +78,28 @@ function App() {
         {/* Main Application */}
         {!showSplash && (
           <>
-            {currentView === 'clientList' ? (
-              <>
-                <Header onAddClient={handleAddClient} />
-                <main className="main-content">
-                  <ClientList onOpenMainApp={handleOpenMainApp} />
-                </main>
-                {showAddForm && (
-                  <AddClientForm onClose={handleCloseForm} />
-                )}
-              </>
-            ) : (
-              <>
-                <MainApplication 
-                  selectedClients={mainAppData.clients}
-                  selectedMonth={mainAppData.month}
-                  onBack={handleBackToClientList}
-                />
-                <FloatingITCBar 
-                  selectedClient={mainAppData.clients?.[0]}
-                  selectedMonth={mainAppData.month}
-                />
-              </>
-            )}
+            <Header onAddClient={handleAddClient} />
+            <main className="main-content">
+              {currentView === 'clientList' && (
+                <ClientList onOpenMainApp={handleOpenMainApp} />
+              )}
+              {currentView === 'addClient' && (
+                <AddClientForm onClose={handleCloseForm} />
+              )}
+              {currentView === 'mainApp' && (
+                <>
+                  <MainApplication 
+                    selectedClients={mainAppData.clients}
+                    selectedMonth={mainAppData.month}
+                    onBack={handleBackToClientList}
+                  />
+                  <FloatingITCBar 
+                    selectedClient={mainAppData.clients?.[0]}
+                    selectedMonth={mainAppData.month}
+                  />
+                </>
+              )}
+            </main>
           </>
         )}
       </div>
