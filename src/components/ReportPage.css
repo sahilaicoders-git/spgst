@@ -1,8 +1,10 @@
 /* Report Page Styles */
 .report-page {
-  padding: 20px;
+  padding: 0;
   background: #f8fafc;
   min-height: 100vh;
+  max-width: none;
+  width: 100%;
 }
 
 /* Header */
@@ -10,10 +12,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 0;
   padding: 24px;
   background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-  border-radius: 16px;
+  border-radius: 0;
   color: white;
   box-shadow: 0 8px 32px rgba(30, 64, 175, 0.3);
 }
@@ -158,10 +160,11 @@
 /* Content */
 .report-content {
   background: white;
-  border-radius: 12px;
+  border-radius: 0;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   min-height: 400px;
+  margin: 0;
 }
 
 /* Loading */
