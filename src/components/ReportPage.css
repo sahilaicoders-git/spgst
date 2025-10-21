@@ -379,6 +379,111 @@ table tfoot td {
   color: #1e293b;
 }
 
+/* Sales Summary Grid */
+.sales-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.sales-summary-card {
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.sales-summary-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.sales-summary-card.b2b-card {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.sales-summary-card.b2b-card:hover {
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+}
+
+.sales-summary-card.b2c-card {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.sales-summary-card.b2c-card:hover {
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
+}
+
+.sales-summary-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sales-summary-card .card-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  backdrop-filter: blur(10px);
+}
+
+.sales-summary-card .card-header h4 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+}
+
+.sales-summary-card .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sales-summary-card .summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.sales-summary-card .summary-row span {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.sales-summary-card .summary-row strong {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.sales-summary-card .summary-row.total-row {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sales-summary-card .summary-row.total-row span {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.sales-summary-card .summary-row.total-row strong {
+  font-size: 20px;
+  font-weight: 700;
+}
+
 /* Purchase Summary Grid */
 .purchase-summary-grid {
   display: grid;
@@ -993,6 +1098,10 @@ table tfoot td {
   }
   
   .doc-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sales-summary-grid {
     grid-template-columns: 1fr;
   }
   
