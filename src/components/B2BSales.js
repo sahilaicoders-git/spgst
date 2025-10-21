@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Building, Upload, FileSpreadsheet, Edit, Trash2, Save, X } from 'lucide-react';
+import { Building, Upload, FileSpreadsheet, Edit, Trash2, Save, X, Plus } from 'lucide-react';
 import './B2BSales.css';
 import ClientDatabaseManager from '../utils/ClientDatabaseManager';
 
@@ -8,10 +8,178 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
   const [dbB2BEntries, setDbB2BEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [editingEntry, setEditingEntry] = useState(null);
   const [editFormData, setEditFormData] = useState({});
   const fileInputRef = useRef(null);
   const dbManager = new ClientDatabaseManager();
+
+  // Initial form state
+  const initialFormState = {
+    customerGSTIN: '',
+    customerName: '',
+    placeOfSupply: '37-Andhra Pradesh',
+    invoiceNumber: '',
+    invoiceDate: new Date().toISOString().split('T')[0],
+    invoiceType: 'Regular B2B',
+    reverseCharge: 'N',
+    taxableValue: '',
+    taxRate: '18',
+    cgst: '0.00',
+    sgst: '0.00',
+    igst: '0.00',
+    cessAmount: '0.00',
+    totalInvoiceValue: '0.00',
+    hsnCode: '',
+    itemDescription: '',
+    quantity: '',
+    unit: 'PCS'
+  };
+
+  const [addFormData, setAddFormData] = useState(initialFormState);
+
+  // Indian States for Place of Supply
+  const indianStates = [
+    '01-Jammu and Kashmir', '02-Himachal Pradesh', '03-Punjab', '04-Chandigarh',
+    '05-Uttarakhand', '06-Haryana', '07-Delhi', '08-Rajasthan',
+    '09-Uttar Pradesh', '10-Bihar', '11-Sikkim', '12-Arunachal Pradesh',
+    '13-Nagaland', '14-Manipur', '15-Mizoram', '16-Tripura',
+    '17-Meghalaya', '18-Assam', '19-West Bengal', '20-Jharkhand',
+    '21-Odisha', '22-Chhattisgarh', '23-Madhya Pradesh', '24-Gujarat',
+    '25-Daman and Diu', '26-Dadra and Nagar Haveli', '27-Maharashtra', '29-Karnataka',
+    '30-Goa', '31-Lakshadweep', '32-Kerala', '33-Tamil Nadu',
+    '34-Puducherry', '35-Andaman and Nicobar Islands', '36-Telangana', '37-Andhra Pradesh',
+    '38-Ladakh', '97-Other Territory'
+  ];
+
+  // Tax rates
+  const taxRates = ['0', '0.25', '3', '5', '12', '18', '28'];
+
+  // Invoice types
+  const invoiceTypes = ['Regular B2B', 'SEZ with payment', 'SEZ without payment', 'Deemed Export'];
+
+  // Units
+  const units = ['PCS', 'KG', 'LTR', 'MTR', 'BOX', 'SET', 'PAIR', 'UNIT', 'DOZEN', 'BUNDLE'];
+
+  // Auto-calculate taxes based on taxable value, tax rate, and place of supply
+  const calculateTaxes = (taxableValue, taxRate, placeOfSupply, cessAmount = 0) => {
+    const taxable = parseFloat(taxableValue) || 0;
+    const rate = parseFloat(taxRate) || 0;
+    const cess = parseFloat(cessAmount) || 0;
+    
+    // Check if inter-state (different state code) or intra-state (same state code 37)
+    const isInterState = !placeOfSupply.startsWith('37-');
+    
+    let cgst = 0;
+    let sgst = 0;
+    let igst = 0;
+    
+    if (isInterState) {
+      // Inter-state: Only IGST
+      igst = (taxable * rate) / 100;
+    } else {
+      // Intra-state: CGST + SGST (split equally)
+      const totalTax = (taxable * rate) / 100;
+      cgst = totalTax / 2;
+      sgst = totalTax / 2;
+    }
+    
+    const totalInvoiceValue = taxable + cgst + sgst + igst + cess;
+    
+    return {
+      cgst: cgst.toFixed(2),
+      sgst: sgst.toFixed(2),
+      igst: igst.toFixed(2),
+      totalInvoiceValue: totalInvoiceValue.toFixed(2)
+    };
+  };
+
+  // Handle form field changes with auto-calculation
+  const handleAddFormChange = (field, value) => {
+    const updatedForm = { ...addFormData, [field]: value };
+    
+    // Auto-calculate taxes when relevant fields change
+    if (['taxableValue', 'taxRate', 'placeOfSupply', 'cessAmount'].includes(field)) {
+      const calculated = calculateTaxes(
+        updatedForm.taxableValue,
+        updatedForm.taxRate,
+        updatedForm.placeOfSupply,
+        updatedForm.cessAmount
+      );
+      updatedForm.cgst = calculated.cgst;
+      updatedForm.sgst = calculated.sgst;
+      updatedForm.igst = calculated.igst;
+      updatedForm.totalInvoiceValue = calculated.totalInvoiceValue;
+    }
+    
+    setAddFormData(updatedForm);
+  };
+
+  // Validate GSTIN format
+  const validateGSTIN = (gstin) => {
+    const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+    return gstinRegex.test(gstin);
+  };
+
+  // Handle save new B2B entry
+  const handleSaveAddForm = async () => {
+    // Validation
+    if (!addFormData.customerGSTIN || !validateGSTIN(addFormData.customerGSTIN)) {
+      alert('Please enter a valid GSTIN (15 characters)');
+      return;
+    }
+    if (!addFormData.customerName) {
+      alert('Please enter customer name');
+      return;
+    }
+    if (!addFormData.invoiceNumber) {
+      alert('Please enter invoice number');
+      return;
+    }
+    if (!addFormData.taxableValue || parseFloat(addFormData.taxableValue) <= 0) {
+      alert('Please enter a valid taxable value');
+      return;
+    }
+
+    try {
+      const newEntry = {
+        customerGSTIN: addFormData.customerGSTIN,
+        customerName: addFormData.customerName,
+        placeOfSupply: addFormData.placeOfSupply,
+        invoiceNumber: addFormData.invoiceNumber,
+        invoiceDate: addFormData.invoiceDate,
+        invoiceType: addFormData.invoiceType,
+        reverseCharge: addFormData.reverseCharge,
+        taxableValue: addFormData.taxableValue,
+        taxRate: addFormData.taxRate,
+        centralTax: addFormData.cgst,
+        stateTax: addFormData.sgst,
+        integratedTax: addFormData.igst,
+        cessAmount: addFormData.cessAmount,
+        invoiceValue: addFormData.totalInvoiceValue,
+        hsnCode: addFormData.hsnCode,
+        itemDescription: addFormData.itemDescription,
+        quantity: addFormData.quantity,
+        unit: addFormData.unit,
+        transactionType: 'B2B',
+        month: selectedMonth
+      };
+
+      // Save to database
+      if (selectedClient && selectedMonth) {
+        await dbManager.saveClientSale(selectedClient.id, newEntry);
+        await loadB2BSalesFromDB();
+        alert('B2B entry saved successfully!');
+      }
+
+      // Reset form and close modal
+      setAddFormData(initialFormState);
+      setShowAddModal(false);
+    } catch (error) {
+      console.error('Error saving B2B entry:', error);
+      alert('Failed to save B2B entry');
+    }
+  };
 
   // Filter B2B entries from props (for backward compatibility)
   const propB2BEntries = salesEntries ? salesEntries.filter(entry => entry.transactionType === 'B2B') : [];
@@ -332,6 +500,13 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
             style={{ display: 'none' }}
           />
           <button 
+            className="action-btn add-b2b-btn"
+            onClick={() => setShowAddModal(true)}
+          >
+            <Plus size={18} />
+            Add B2B
+          </button>
+          <button 
             className="action-btn template-btn"
             onClick={downloadTemplate}
           >
@@ -464,6 +639,265 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
           </table>
         </div>
       </div>
+
+      {/* Add B2B Modal */}
+      {showAddModal && (
+        <div className="modal-overlay">
+          <div className="modal-container add-b2b-modal">
+            <div className="modal-header">
+              <h3>Add B2B Sales Entry</h3>
+              <button className="close-btn" onClick={() => setShowAddModal(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              {/* Customer Information */}
+              <div className="form-section">
+                <h4>Customer Information</h4>
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label>Customer GSTIN *</label>
+                    <input
+                      type="text"
+                      value={addFormData.customerGSTIN}
+                      onChange={(e) => handleAddFormChange('customerGSTIN', e.target.value.toUpperCase())}
+                      placeholder="15-character GSTIN"
+                      maxLength="15"
+                      className={addFormData.customerGSTIN && !validateGSTIN(addFormData.customerGSTIN) ? 'error' : ''}
+                    />
+                    {addFormData.customerGSTIN && !validateGSTIN(addFormData.customerGSTIN) && (
+                      <span className="error-text">Invalid GSTIN format</span>
+                    )}
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Customer Name *</label>
+                    <input
+                      type="text"
+                      value={addFormData.customerName}
+                      onChange={(e) => handleAddFormChange('customerName', e.target.value)}
+                      placeholder="Receiver/Customer Name"
+                    />
+                  </div>
+                </div>
+                
+                <div className="form-grid">
+                  <div className="form-group full-width">
+                    <label>Place of Supply *</label>
+                    <select
+                      value={addFormData.placeOfSupply}
+                      onChange={(e) => handleAddFormChange('placeOfSupply', e.target.value)}
+                    >
+                      {indianStates.map(state => (
+                        <option key={state} value={state}>{state}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Invoice Details */}
+              <div className="form-section">
+                <h4>Invoice Details</h4>
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label>Invoice Number *</label>
+                    <input
+                      type="text"
+                      value={addFormData.invoiceNumber}
+                      onChange={(e) => handleAddFormChange('invoiceNumber', e.target.value)}
+                      placeholder="Invoice Number"
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Invoice Date *</label>
+                    <input
+                      type="date"
+                      value={addFormData.invoiceDate}
+                      onChange={(e) => handleAddFormChange('invoiceDate', e.target.value)}
+                      max={new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+                </div>
+                
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label>Invoice Type</label>
+                    <select
+                      value={addFormData.invoiceType}
+                      onChange={(e) => handleAddFormChange('invoiceType', e.target.value)}
+                    >
+                      {invoiceTypes.map(type => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Reverse Charge</label>
+                    <select
+                      value={addFormData.reverseCharge}
+                      onChange={(e) => handleAddFormChange('reverseCharge', e.target.value)}
+                    >
+                      <option value="N">No</option>
+                      <option value="Y">Yes</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tax Calculation */}
+              <div className="form-section">
+                <h4>Tax Calculation</h4>
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label>Taxable Value (₹) *</label>
+                    <input
+                      type="number"
+                      value={addFormData.taxableValue}
+                      onChange={(e) => handleAddFormChange('taxableValue', e.target.value)}
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Tax Rate (%)</label>
+                    <select
+                      value={addFormData.taxRate}
+                      onChange={(e) => handleAddFormChange('taxRate', e.target.value)}
+                    >
+                      {taxRates.map(rate => (
+                        <option key={rate} value={rate}>{rate}%</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label>CGST (₹)</label>
+                    <input
+                      type="text"
+                      value={addFormData.cgst}
+                      readOnly
+                      className="readonly-field"
+                      placeholder="Auto-calculated"
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>SGST (₹)</label>
+                    <input
+                      type="text"
+                      value={addFormData.sgst}
+                      readOnly
+                      className="readonly-field"
+                      placeholder="Auto-calculated"
+                    />
+                  </div>
+                </div>
+                
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label>IGST (₹)</label>
+                    <input
+                      type="text"
+                      value={addFormData.igst}
+                      readOnly
+                      className="readonly-field"
+                      placeholder="Auto-calculated"
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Cess Amount (₹)</label>
+                    <input
+                      type="number"
+                      value={addFormData.cessAmount}
+                      onChange={(e) => handleAddFormChange('cessAmount', e.target.value)}
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+                </div>
+                
+                <div className="total-invoice-value">
+                  <label>Total Invoice Value:</label>
+                  <span className="value">₹ {addFormData.totalInvoiceValue}</span>
+                </div>
+              </div>
+
+              {/* Product Details (Optional) */}
+              <div className="form-section">
+                <h4>Product Details (Optional)</h4>
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label>HSN/SAC Code</label>
+                    <input
+                      type="text"
+                      value={addFormData.hsnCode}
+                      onChange={(e) => handleAddFormChange('hsnCode', e.target.value)}
+                      placeholder="6-8 digit HSN/SAC code"
+                      maxLength="8"
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Item Description</label>
+                    <input
+                      type="text"
+                      value={addFormData.itemDescription}
+                      onChange={(e) => handleAddFormChange('itemDescription', e.target.value)}
+                      placeholder="Product/Service description"
+                    />
+                  </div>
+                </div>
+                
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label>Quantity</label>
+                    <input
+                      type="number"
+                      value={addFormData.quantity}
+                      onChange={(e) => handleAddFormChange('quantity', e.target.value)}
+                      placeholder="Quantity"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Unit</label>
+                    <select
+                      value={addFormData.unit}
+                      onChange={(e) => handleAddFormChange('unit', e.target.value)}
+                    >
+                      {units.map(unit => (
+                        <option key={unit} value={unit}>{unit}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => setShowAddModal(false)}>
+                Cancel
+              </button>
+              <button className="btn-primary" onClick={handleSaveAddForm}>
+                <Save size={18} />
+                Save Entry
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Edit Modal */}
       {showEditModal && (
