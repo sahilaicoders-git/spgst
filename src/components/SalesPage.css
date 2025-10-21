@@ -1,7 +1,7 @@
 .sales-page {
   width: 100%;
   margin: 0;
-  padding: 20px;
+  padding: 0;
   background: #f8fafc;
   min-height: 100vh;
 }
@@ -9,9 +9,9 @@
 /* Header Section */
 .sales-header {
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 0;
-  margin-bottom: 24px;
+  margin-bottom: 0;
   box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
   overflow: hidden;
 }
@@ -283,6 +283,8 @@
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  margin: 20px;
+  width: calc(100% - 40px);
 }
 
 .entries-table-container {
