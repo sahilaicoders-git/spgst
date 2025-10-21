@@ -164,7 +164,29 @@ const ReportPage = ({ selectedClient, selectedMonth }) => {
       hsnInwardMap[key].cessAmount += parseFloat(purchase.cess || 0);
     });
 
-    // ITC Summary
+    // Tax Summary (Calculate FIRST before ITC)
+    const taxSummary = {
+      totalTaxableValue: 0,
+      totalCGST: 0,
+      totalSGST: 0,
+      totalIGST: 0,
+      totalCess: 0,
+      totalTaxLiability: 0,
+      totalTaxPaid: 0
+    };
+
+    [...b2bSales, ...b2cSales].forEach(sale => {
+      taxSummary.totalTaxableValue += parseFloat(sale.taxableValue || 0);
+      taxSummary.totalCGST += parseFloat(sale.centralTax || 0);
+      taxSummary.totalSGST += parseFloat(sale.stateTax || 0);
+      taxSummary.totalIGST += parseFloat(sale.integratedTax || 0);
+      taxSummary.totalCess += parseFloat(sale.cess || 0);
+    });
+
+    taxSummary.totalTaxLiability = taxSummary.totalCGST + taxSummary.totalSGST + taxSummary.totalIGST + taxSummary.totalCess;
+    taxSummary.totalTaxPaid = taxSummary.totalTaxLiability; // Assuming all tax is paid
+
+    // ITC Summary (Calculate AFTER tax summary)
     const itcSummary = {
       totalITC: 0,
       cgstITC: 0,
@@ -194,28 +216,6 @@ const ReportPage = ({ selectedClient, selectedMonth }) => {
     
     itcSummary.utilizedITC = utilizedCGST + utilizedSGST + utilizedIGST + utilizedCess;
     itcSummary.carryForwardITC = itcSummary.totalITC - itcSummary.utilizedITC;
-
-    // Tax Summary
-    const taxSummary = {
-      totalTaxableValue: 0,
-      totalCGST: 0,
-      totalSGST: 0,
-      totalIGST: 0,
-      totalCess: 0,
-      totalTaxLiability: 0,
-      totalTaxPaid: 0
-    };
-
-    [...b2bSales, ...b2cSales].forEach(sale => {
-      taxSummary.totalTaxableValue += parseFloat(sale.taxableValue || 0);
-      taxSummary.totalCGST += parseFloat(sale.centralTax || 0);
-      taxSummary.totalSGST += parseFloat(sale.stateTax || 0);
-      taxSummary.totalIGST += parseFloat(sale.integratedTax || 0);
-      taxSummary.totalCess += parseFloat(sale.cess || 0);
-    });
-
-    taxSummary.totalTaxLiability = taxSummary.totalCGST + taxSummary.totalSGST + taxSummary.totalIGST + taxSummary.totalCess;
-    taxSummary.totalTaxPaid = taxSummary.totalTaxLiability; // Assuming all tax is paid
 
     // Document Summary
     const documentSummary = {
