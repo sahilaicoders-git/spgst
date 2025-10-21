@@ -143,6 +143,20 @@ def init_client_db(client_name):
         )
     ''')
     
+    # Create sundry debtors table for the client
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS sundry_debtors (
+            id TEXT PRIMARY KEY,
+            debtor_name TEXT NOT NULL,
+            gstin TEXT NOT NULL UNIQUE,
+            address TEXT,
+            contact TEXT,
+            email TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
     # Create GST returns table for the client
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS gst_returns (
@@ -1217,6 +1231,191 @@ def bulk_add_client_b2c_sales(client_id):
             'message': f'Successfully added {added_count} B2C sales',
             'count': added_count
         }), 201
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ===================== SUNDRY DEBTORS ROUTES =====================
+
+@app.route('/api/clients/<client_id>/sundry-debtors', methods=['GET'])
+def get_sundry_debtors(client_id):
+    """Get all sundry debtors for a specific client"""
+    try:
+        # Get client details
+        conn = get_db_connection()
+        client = conn.execute('SELECT * FROM clients WHERE id = ?', (client_id,)).fetchone()
+        conn.close()
+        
+        if not client:
+            return jsonify({'error': 'Client not found'}), 404
+        
+        # Get client database
+        client_db_path = get_client_db_path(client['client_name'])
+        if not os.path.exists(client_db_path):
+            return jsonify({'error': 'Client database not found'}), 404
+        
+        client_conn = sqlite3.connect(client_db_path)
+        client_conn.row_factory = sqlite3.Row
+        cursor = client_conn.cursor()
+        
+        # Get all debtors
+        debtors = cursor.execute('''
+            SELECT * FROM sundry_debtors 
+            ORDER BY debtor_name ASC
+        ''').fetchall()
+        
+        client_conn.close()
+        
+        debtors_list = []
+        for debtor in debtors:
+            debtors_list.append({
+                'id': debtor['id'],
+                'debtorName': debtor['debtor_name'],
+                'gstin': debtor['gstin'],
+                'address': debtor['address'],
+                'contact': debtor['contact'],
+                'email': debtor['email'],
+                'createdAt': debtor['created_at'],
+                'updatedAt': debtor['updated_at']
+            })
+        
+        return jsonify(debtors_list), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/clients/<client_id>/sundry-debtors', methods=['POST'])
+def add_sundry_debtor(client_id):
+    """Add a new sundry debtor for a specific client"""
+    try:
+        data = request.json
+        
+        # Get client details
+        conn = get_db_connection()
+        client = conn.execute('SELECT * FROM clients WHERE id = ?', (client_id,)).fetchone()
+        conn.close()
+        
+        if not client:
+            return jsonify({'error': 'Client not found'}), 404
+        
+        # Get client database
+        client_db_path = get_client_db_path(client['client_name'])
+        if not os.path.exists(client_db_path):
+            return jsonify({'error': 'Client database not found'}), 404
+        
+        client_conn = sqlite3.connect(client_db_path)
+        cursor = client_conn.cursor()
+        
+        debtor_id = str(uuid.uuid4())
+        
+        cursor.execute('''
+            INSERT INTO sundry_debtors (
+                id, debtor_name, gstin, address, contact, email
+            ) VALUES (?, ?, ?, ?, ?, ?)
+        ''', (
+            debtor_id,
+            data.get('debtorName', ''),
+            data.get('gstin', ''),
+            data.get('address', ''),
+            data.get('contact', ''),
+            data.get('email', '')
+        ))
+        
+        client_conn.commit()
+        client_conn.close()
+        
+        return jsonify({
+            'message': 'Sundry debtor added successfully',
+            'debtorId': debtor_id
+        }), 201
+        
+    except sqlite3.IntegrityError:
+        return jsonify({'error': 'GSTIN already exists'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/clients/<client_id>/sundry-debtors/<debtor_id>', methods=['PUT'])
+def update_sundry_debtor(client_id, debtor_id):
+    """Update an existing sundry debtor"""
+    try:
+        data = request.json
+        
+        # Get client details
+        conn = get_db_connection()
+        client = conn.execute('SELECT * FROM clients WHERE id = ?', (client_id,)).fetchone()
+        conn.close()
+        
+        if not client:
+            return jsonify({'error': 'Client not found'}), 404
+        
+        # Get client database
+        client_db_path = get_client_db_path(client['client_name'])
+        if not os.path.exists(client_db_path):
+            return jsonify({'error': 'Client database not found'}), 404
+        
+        client_conn = sqlite3.connect(client_db_path)
+        cursor = client_conn.cursor()
+        
+        cursor.execute('''
+            UPDATE sundry_debtors 
+            SET debtor_name = ?, gstin = ?, address = ?, contact = ?, email = ?, 
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ''', (
+            data.get('debtorName', ''),
+            data.get('gstin', ''),
+            data.get('address', ''),
+            data.get('contact', ''),
+            data.get('email', ''),
+            debtor_id
+        ))
+        
+        client_conn.commit()
+        
+        if cursor.rowcount == 0:
+            client_conn.close()
+            return jsonify({'error': 'Sundry debtor not found'}), 404
+        
+        client_conn.close()
+        
+        return jsonify({'message': 'Sundry debtor updated successfully'}), 200
+        
+    except sqlite3.IntegrityError:
+        return jsonify({'error': 'GSTIN already exists'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/clients/<client_id>/sundry-debtors/<debtor_id>', methods=['DELETE'])
+def delete_sundry_debtor(client_id, debtor_id):
+    """Delete a sundry debtor"""
+    try:
+        # Get client details
+        conn = get_db_connection()
+        client = conn.execute('SELECT * FROM clients WHERE id = ?', (client_id,)).fetchone()
+        conn.close()
+        
+        if not client:
+            return jsonify({'error': 'Client not found'}), 404
+        
+        # Get client database
+        client_db_path = get_client_db_path(client['client_name'])
+        if not os.path.exists(client_db_path):
+            return jsonify({'error': 'Client database not found'}), 404
+        
+        client_conn = sqlite3.connect(client_db_path)
+        cursor = client_conn.cursor()
+        
+        cursor.execute('DELETE FROM sundry_debtors WHERE id = ?', (debtor_id,))
+        
+        client_conn.commit()
+        
+        if cursor.rowcount == 0:
+            client_conn.close()
+            return jsonify({'error': 'Sundry debtor not found'}), 404
+        
+        client_conn.close()
+        
+        return jsonify({'message': 'Sundry debtor deleted successfully'}), 200
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500

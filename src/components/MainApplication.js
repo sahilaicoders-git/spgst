@@ -21,6 +21,7 @@ import {
 import PurchasePage from './PurchasePage';
 import SalesPage from './SalesPage';
 import ReportPage from './ReportPage';
+import SundryDebtors from './SundryDebtors';
 import './MainApplication.css';
 
 const MainApplication = ({ selectedClients, selectedMonth, onBack }) => {
@@ -368,6 +369,12 @@ const MainApplication = ({ selectedClients, selectedMonth, onBack }) => {
             General
           </button>
           <button 
+            className={`settings-tab ${settingsTab === 'debtors' ? 'active' : ''}`}
+            onClick={() => setSettingsTab('debtors')}
+          >
+            Sundry Debtors
+          </button>
+          <button 
             className={`settings-tab ${settingsTab === 'shortcuts' ? 'active' : ''}`}
             onClick={() => setSettingsTab('shortcuts')}
           >
@@ -382,6 +389,10 @@ const MainApplication = ({ selectedClients, selectedMonth, onBack }) => {
         </div>
         
         <div className="settings-content">
+          {settingsTab === 'debtors' && (
+            <SundryDebtors selectedClient={selectedClients[0]?.id} />
+          )}
+          
           {settingsTab === 'general' && (
             <div className="settings-section">
               <h3>General Settings</h3>

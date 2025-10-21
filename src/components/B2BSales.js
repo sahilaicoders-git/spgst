@@ -11,6 +11,8 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingEntry, setEditingEntry] = useState(null);
   const [editFormData, setEditFormData] = useState({});
+  const [sundryDebtors, setSundryDebtors] = useState([]);
+  const [showDebtorSuggestions, setShowDebtorSuggestions] = useState(false);
   const fileInputRef = useRef(null);
   const dbManager = new ClientDatabaseManager();
 
@@ -37,6 +39,25 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
   };
 
   const [addFormData, setAddFormData] = useState(initialFormState);
+
+  // Fetch sundry debtors when component mounts
+  useEffect(() => {
+    const fetchDebtors = async () => {
+      if (!selectedClient) return;
+      
+      try {
+        const response = await fetch(`http://127.0.0.1:5001/api/clients/${selectedClient}/sundry-debtors`);
+        if (response.ok) {
+          const data = await response.json();
+          setSundryDebtors(data);
+        }
+      } catch (error) {
+        console.error('Error fetching sundry debtors:', error);
+      }
+    };
+    
+    fetchDebtors();
+  }, [selectedClient]);
 
   // Indian States for Place of Supply
   const indianStates = [
@@ -94,9 +115,48 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
     };
   };
 
+  // Handle debtor selection for auto-fill
+  const handleDebtorSelect = (debtor) => {
+    const updatedForm = {
+      ...addFormData,
+      customerGSTIN: debtor.gstin,
+      customerName: debtor.debtorName
+    };
+    
+    // Auto-calculate taxes with the updated form
+    const taxes = calculateTaxes(
+      updatedForm.taxableValue,
+      updatedForm.taxRate,
+      updatedForm.placeOfSupply,
+      updatedForm.cessAmount
+    );
+    
+    setAddFormData({
+      ...updatedForm,
+      ...taxes
+    });
+    
+    setShowDebtorSuggestions(false);
+  };
+
+  // Filter debtors based on input
+  const getFilteredDebtors = (searchTerm) => {
+    if (!searchTerm || searchTerm.length < 2) return [];
+    
+    return sundryDebtors.filter(debtor =>
+      debtor.debtorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      debtor.gstin.toLowerCase().includes(searchTerm.toLowerCase())
+    ).slice(0, 5); // Limit to 5 suggestions
+  };
+
   // Handle form field changes with auto-calculation
   const handleAddFormChange = (field, value) => {
     const updatedForm = { ...addFormData, [field]: value };
+    
+    // Show suggestions when typing in customer name or GSTIN
+    if (field === 'customerName' || field === 'customerGSTIN') {
+      setShowDebtorSuggestions(value.length >= 2);
+    }
     
     // Auto-calculate taxes when relevant fields change
     if (['taxableValue', 'taxRate', 'placeOfSupply', 'cessAmount'].includes(field)) {
@@ -512,14 +572,29 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
               )}
             </div>
 
-            <div className="form-field">
+            <div className="form-field debtor-autocomplete">
               <label>Customer Name *</label>
               <input
                 type="text"
                 value={addFormData.customerName}
                 onChange={(e) => handleAddFormChange('customerName', e.target.value)}
+                onFocus={() => setShowDebtorSuggestions(addFormData.customerName.length >= 2)}
                 placeholder="Enter customer name"
               />
+              {showDebtorSuggestions && getFilteredDebtors(addFormData.customerName).length > 0 && (
+                <div className="debtor-suggestions">
+                  {getFilteredDebtors(addFormData.customerName).map((debtor) => (
+                    <div
+                      key={debtor.id}
+                      className="debtor-suggestion-item"
+                      onClick={() => handleDebtorSelect(debtor)}
+                    >
+                      <div className="debtor-suggestion-name">{debtor.debtorName}</div>
+                      <div className="debtor-suggestion-gstin">{debtor.gstin}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="form-field">
