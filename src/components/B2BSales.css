@@ -458,12 +458,54 @@
   transform: translateY(-1px);
 }
 
-/* Add B2B Modal */
-.add-b2b-modal {
-  max-width: 900px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
+/* Add B2B Full Page */
+.add-b2b-page {
+  width: 100%;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.add-b2b-page-header {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  padding: 20px 32px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+}
+
+.add-b2b-page-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.add-b2b-page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px;
+  background: white;
 }
 
 .form-section {
@@ -574,6 +616,16 @@
   font-size: 24px;
   font-weight: 700;
   color: #1e40af;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px solid #e5e7eb;
 }
 
 @media (max-width: 768px) {
