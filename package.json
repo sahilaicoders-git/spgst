@@ -67,16 +67,41 @@
     "files": [
       "build/**/*",
       "public/electron.js",
+      "public/preload.js",
+      "public/spgsticon.png",
+      "backend/**/*",
       "node_modules/**/*"
     ],
     "mac": {
-      "category": "public.app-category.business"
+      "category": "public.app-category.business",
+      "icon": "public/spgsticon.png"
     },
     "win": {
-      "target": "nsis"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
+      "icon": "public/spgsticon.png",
+      "requestedExecutionLevel": "asInvoker",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "installerIcon": "public/spgsticon.png",
+      "uninstallerIcon": "public/spgsticon.png",
+      "shortcutName": "GST Software"
     },
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "icon": "public/spgsticon.png"
     }
   }
 }

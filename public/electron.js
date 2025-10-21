@@ -34,7 +34,7 @@ function createWindow() {
 
   // Wait a moment for Flask to start
   setTimeout(() => {
-    // Create the browser window
+    // Create the browser window with Windows-specific settings
     mainWindow = new BrowserWindow({
       width: 1200,
       height: 800,
@@ -44,11 +44,20 @@ function createWindow() {
         nodeIntegration: false,
         contextIsolation: true,
         enableRemoteModule: false,
-        preload: path.join(__dirname, 'preload.js')
+        preload: path.join(__dirname, 'preload.js'),
+        webSecurity: true,
+        allowRunningInsecureContent: false,
+        experimentalFeatures: false
       },
-      icon: path.join(__dirname, 'assets/icon.png'),
+      icon: path.join(__dirname, process.platform === 'win32' ? 'spgsticon.png' : 'assets/icon.png'),
       titleBarStyle: 'default',
-      show: false
+      frame: true,
+      show: false,
+      backgroundColor: '#f8fafc',
+      autoHideMenuBar: false,
+      fullscreenable: true,
+      maximizable: true,
+      resizable: true
     });
 
     // Load the app
