@@ -1,4 +1,4 @@
-/* Modern Client Table - Light Blue Theme */
+/* Windows-Compatible Client Table - Light Blue Theme */
 .client-table-container {
   background: #dbeafe;
   border: 1px solid #93c5fd;
@@ -8,6 +8,10 @@
   width: 100%;
   margin: 0;
   padding: 0;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 .table-wrapper {
@@ -241,7 +245,7 @@
 }
 
 .gst-number {
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  font-family: 'Consolas', 'Courier New', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
   font-size: 14px;
   color: #1e40af;
   font-weight: 500;
@@ -314,22 +318,34 @@
   color: #6b7280;
 }
 
-/* Modern Scrollbar */
+/* Windows-Compatible Scrollbar */
+.table-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+
 .table-wrapper::-webkit-scrollbar {
-  height: 8px;
+  height: 12px;
+  width: 12px;
 }
 
 .table-wrapper::-webkit-scrollbar-track {
-  background: #374151;
+  background: #f1f5f9;
+  border-radius: 6px;
 }
 
 .table-wrapper::-webkit-scrollbar-thumb {
-  background: #6b7280;
-  border-radius: 4px;
+  background: #94a3b8;
+  border-radius: 6px;
+  border: 2px solid #f1f5f9;
 }
 
 .table-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: #64748b;
+}
+
+.table-wrapper::-webkit-scrollbar-corner {
+  background: #f1f5f9;
 }
 
 /* Responsive Design */

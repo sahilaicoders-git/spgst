@@ -1,4 +1,4 @@
-/* Modern Client Card - Blue Compact Design */
+/* Windows-Compatible Client Card - Blue Compact Design */
 .client-card {
   background: #dbeafe;
   border: 1px solid #3b82f6;
@@ -9,6 +9,13 @@
   overflow: hidden;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
 }
 
 .client-card:hover {
@@ -198,6 +205,12 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
 }
 
 .view-btn {
