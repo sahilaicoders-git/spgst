@@ -585,27 +585,46 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
             </div>
 
             <div className="form-field debtor-autocomplete">
-              <label>Customer Name * {sundryDebtors.length > 0 && <span className="debtor-count">({sundryDebtors.length} saved)</span>}</label>
+              <label>
+                Customer Name * 
+                {sundryDebtors.length > 0 ? (
+                  <span className="debtor-count">({sundryDebtors.length} saved)</span>
+                ) : (
+                  <span className="debtor-count no-debtors">(No saved debtors)</span>
+                )}
+              </label>
               <input
                 type="text"
                 value={addFormData.customerName}
                 onChange={(e) => handleAddFormChange('customerName', e.target.value)}
-                onFocus={() => sundryDebtors.length > 0 && setShowDebtorSuggestions(true)}
+                onFocus={() => {
+                  console.log('Focus - Debtors available:', sundryDebtors.length);
+                  console.log('Debtors:', sundryDebtors);
+                  if (sundryDebtors.length > 0) {
+                    setShowDebtorSuggestions(true);
+                  }
+                }}
                 onBlur={() => setTimeout(() => setShowDebtorSuggestions(false), 200)}
-                placeholder="Type name or click to see saved debtors"
+                placeholder={sundryDebtors.length > 0 ? "Type name or click to see saved debtors" : "No saved debtors - add in Settings"}
               />
-              {showDebtorSuggestions && getFilteredDebtors(addFormData.customerName).length > 0 && (
+              {showDebtorSuggestions && (
                 <div className="debtor-suggestions">
-                  {getFilteredDebtors(addFormData.customerName).map((debtor) => (
-                    <div
-                      key={debtor.id}
-                      className="debtor-suggestion-item"
-                      onClick={() => handleDebtorSelect(debtor)}
-                    >
-                      <div className="debtor-suggestion-name">{debtor.debtorName}</div>
-                      <div className="debtor-suggestion-gstin">{debtor.gstin}</div>
+                  {getFilteredDebtors(addFormData.customerName).length > 0 ? (
+                    getFilteredDebtors(addFormData.customerName).map((debtor) => (
+                      <div
+                        key={debtor.id}
+                        className="debtor-suggestion-item"
+                        onClick={() => handleDebtorSelect(debtor)}
+                      >
+                        <div className="debtor-suggestion-name">{debtor.debtorName}</div>
+                        <div className="debtor-suggestion-gstin">{debtor.gstin}</div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="debtor-suggestion-empty">
+                      No matching debtors found
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
             </div>
