@@ -390,23 +390,26 @@ const B2CSales = ({ salesEntries, selectedClient, selectedMonth }) => {
         </div>
       </div>
 
-      {/* Add Form Modal */}
+      {/* Add B2C Form - Full Page */}
       {showAddForm && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <div>
-                <h3>Add B2C Sale</h3>
-                <p className="month-info">Month: {selectedMonth}</p>
-              </div>
+        <div className="add-b2c-page">
+          <div className="add-b2c-page-header">
+            <div className="header-left">
               <button 
-                className="close-btn"
+                className="back-btn"
                 onClick={() => setShowAddForm(false)}
               >
                 <X size={20} />
+                <span>Back</span>
               </button>
+              <div>
+                <h2>Add B2C Sale</h2>
+                <p className="month-info">Month: {selectedMonth}</p>
+              </div>
             </div>
+          </div>
 
+          <div className="add-b2c-page-content">
             <form onSubmit={handleSubmit} className="b2c-form">
               <div className="form-grid">
                 <div className="form-group">
