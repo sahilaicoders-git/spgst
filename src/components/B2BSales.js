@@ -50,6 +50,9 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
         if (response.ok) {
           const data = await response.json();
           setSundryDebtors(data);
+          console.log(`Loaded ${data.length} sundry debtors for autocomplete`);
+        } else {
+          console.error('Failed to fetch sundry debtors:', response.status);
         }
       } catch (error) {
         console.error('Error fetching sundry debtors:', error);
@@ -141,21 +144,30 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
 
   // Filter debtors based on input
   const getFilteredDebtors = (searchTerm) => {
-    if (!searchTerm || searchTerm.length < 2) return [];
+    // If no search term, show all debtors (limited to 10)
+    if (!searchTerm || searchTerm.length === 0) {
+      return sundryDebtors.slice(0, 10);
+    }
     
+    // If search term is less than 2 characters but exists, still filter
     return sundryDebtors.filter(debtor =>
       debtor.debtorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       debtor.gstin.toLowerCase().includes(searchTerm.toLowerCase())
-    ).slice(0, 5); // Limit to 5 suggestions
+    ).slice(0, 10); // Limit to 10 suggestions
   };
 
   // Handle form field changes with auto-calculation
   const handleAddFormChange = (field, value) => {
     const updatedForm = { ...addFormData, [field]: value };
     
-    // Show suggestions when typing in customer name or GSTIN
-    if (field === 'customerName' || field === 'customerGSTIN') {
-      setShowDebtorSuggestions(value.length >= 2);
+    // Show suggestions when typing in customer name
+    if (field === 'customerName') {
+      setShowDebtorSuggestions(true);
+    }
+    
+    // Hide suggestions when typing in GSTIN
+    if (field === 'customerGSTIN') {
+      setShowDebtorSuggestions(false);
     }
     
     // Auto-calculate taxes when relevant fields change
@@ -573,13 +585,14 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
             </div>
 
             <div className="form-field debtor-autocomplete">
-              <label>Customer Name *</label>
+              <label>Customer Name * {sundryDebtors.length > 0 && <span className="debtor-count">({sundryDebtors.length} saved)</span>}</label>
               <input
                 type="text"
                 value={addFormData.customerName}
                 onChange={(e) => handleAddFormChange('customerName', e.target.value)}
-                onFocus={() => setShowDebtorSuggestions(addFormData.customerName.length >= 2)}
-                placeholder="Enter customer name"
+                onFocus={() => sundryDebtors.length > 0 && setShowDebtorSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowDebtorSuggestions(false), 200)}
+                placeholder="Type name or click to see saved debtors"
               />
               {showDebtorSuggestions && getFilteredDebtors(addFormData.customerName).length > 0 && (
                 <div className="debtor-suggestions">
