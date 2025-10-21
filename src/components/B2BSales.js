@@ -494,236 +494,207 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
         </div>
 
         <div className="add-b2b-page-content">
-          {/* Customer Information */}
-          <div className="form-section">
-            <h4>Customer Information</h4>
-            <div className="form-grid">
-              <div className="form-group">
-                <label>Customer GSTIN *</label>
-                <input
-                  type="text"
-                  value={addFormData.customerGSTIN}
-                  onChange={(e) => handleAddFormChange('customerGSTIN', e.target.value.toUpperCase())}
-                  placeholder="15-character GSTIN"
-                  maxLength="15"
-                  className={addFormData.customerGSTIN && !validateGSTIN(addFormData.customerGSTIN) ? 'error' : ''}
-                />
-                {addFormData.customerGSTIN && !validateGSTIN(addFormData.customerGSTIN) && (
-                  <span className="error-text">Invalid GSTIN format</span>
-                )}
-              </div>
-              
-              <div className="form-group">
-                <label>Customer Name *</label>
-                <input
-                  type="text"
-                  value={addFormData.customerName}
-                  onChange={(e) => handleAddFormChange('customerName', e.target.value)}
-                  placeholder="Receiver/Customer Name"
-                />
-              </div>
+          {/* Main Form Grid - All fields visible at once */}
+          <div className="simple-form-grid">
+            {/* Row 1 */}
+            <div className="form-field">
+              <label>Customer GSTIN *</label>
+              <input
+                type="text"
+                value={addFormData.customerGSTIN}
+                onChange={(e) => handleAddFormChange('customerGSTIN', e.target.value.toUpperCase())}
+                placeholder="29ABCDE1234F1Z5"
+                maxLength="15"
+                className={addFormData.customerGSTIN && !validateGSTIN(addFormData.customerGSTIN) ? 'error' : ''}
+              />
+              {addFormData.customerGSTIN && !validateGSTIN(addFormData.customerGSTIN) && (
+                <span className="error-text">Invalid GSTIN</span>
+              )}
             </div>
-            
-            <div className="form-grid">
-              <div className="form-group full-width">
-                <label>Place of Supply *</label>
-                <select
-                  value={addFormData.placeOfSupply}
-                  onChange={(e) => handleAddFormChange('placeOfSupply', e.target.value)}
-                >
-                  {indianStates.map(state => (
-                    <option key={state} value={state}>{state}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
 
-          {/* Invoice Details */}
-          <div className="form-section">
-            <h4>Invoice Details</h4>
-            <div className="form-grid">
-              <div className="form-group">
-                <label>Invoice Number *</label>
-                <input
-                  type="text"
-                  value={addFormData.invoiceNumber}
-                  onChange={(e) => handleAddFormChange('invoiceNumber', e.target.value)}
-                  placeholder="Invoice Number"
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Invoice Date *</label>
-                <input
-                  type="date"
-                  value={addFormData.invoiceDate}
-                  onChange={(e) => handleAddFormChange('invoiceDate', e.target.value)}
-                  max={new Date().toISOString().split('T')[0]}
-                />
-              </div>
+            <div className="form-field">
+              <label>Customer Name *</label>
+              <input
+                type="text"
+                value={addFormData.customerName}
+                onChange={(e) => handleAddFormChange('customerName', e.target.value)}
+                placeholder="Enter customer name"
+              />
             </div>
-            
-            <div className="form-grid">
-              <div className="form-group">
-                <label>Invoice Type</label>
-                <select
-                  value={addFormData.invoiceType}
-                  onChange={(e) => handleAddFormChange('invoiceType', e.target.value)}
-                >
-                  {invoiceTypes.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div className="form-group">
-                <label>Reverse Charge</label>
-                <select
-                  value={addFormData.reverseCharge}
-                  onChange={(e) => handleAddFormChange('reverseCharge', e.target.value)}
-                >
-                  <option value="N">No</option>
-                  <option value="Y">Yes</option>
-                </select>
-              </div>
-            </div>
-          </div>
 
-          {/* Tax Calculation */}
-          <div className="form-section">
-            <h4>Tax Calculation</h4>
-            <div className="form-grid">
-              <div className="form-group">
-                <label>Taxable Value (₹) *</label>
-                <input
-                  type="number"
-                  value={addFormData.taxableValue}
-                  onChange={(e) => handleAddFormChange('taxableValue', e.target.value)}
-                  placeholder="0.00"
-                  step="0.01"
-                  min="0"
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Tax Rate (%)</label>
-                <select
-                  value={addFormData.taxRate}
-                  onChange={(e) => handleAddFormChange('taxRate', e.target.value)}
-                >
-                  {taxRates.map(rate => (
-                    <option key={rate} value={rate}>{rate}%</option>
-                  ))}
-                </select>
-              </div>
+            <div className="form-field">
+              <label>Invoice Number *</label>
+              <input
+                type="text"
+                value={addFormData.invoiceNumber}
+                onChange={(e) => handleAddFormChange('invoiceNumber', e.target.value)}
+                placeholder="INV-001"
+              />
             </div>
-            
-            <div className="form-grid">
-              <div className="form-group">
-                <label>CGST (₹)</label>
-                <input
-                  type="text"
-                  value={addFormData.cgst}
-                  readOnly
-                  className="readonly-field"
-                  placeholder="Auto-calculated"
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>SGST (₹)</label>
-                <input
-                  type="text"
-                  value={addFormData.sgst}
-                  readOnly
-                  className="readonly-field"
-                  placeholder="Auto-calculated"
-                />
-              </div>
-            </div>
-            
-            <div className="form-grid">
-              <div className="form-group">
-                <label>IGST (₹)</label>
-                <input
-                  type="text"
-                  value={addFormData.igst}
-                  readOnly
-                  className="readonly-field"
-                  placeholder="Auto-calculated"
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Cess Amount (₹)</label>
-                <input
-                  type="number"
-                  value={addFormData.cessAmount}
-                  onChange={(e) => handleAddFormChange('cessAmount', e.target.value)}
-                  placeholder="0.00"
-                  step="0.01"
-                  min="0"
-                />
-              </div>
-            </div>
-            
-            <div className="total-invoice-value">
-              <label>Total Invoice Value:</label>
-              <span className="value">₹ {addFormData.totalInvoiceValue}</span>
-            </div>
-          </div>
 
-          {/* Product Details (Optional) */}
-          <div className="form-section">
-            <h4>Product Details (Optional)</h4>
-            <div className="form-grid">
-              <div className="form-group">
-                <label>HSN/SAC Code</label>
-                <input
-                  type="text"
-                  value={addFormData.hsnCode}
-                  onChange={(e) => handleAddFormChange('hsnCode', e.target.value)}
-                  placeholder="6-8 digit HSN/SAC code"
-                  maxLength="8"
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Item Description</label>
-                <input
-                  type="text"
-                  value={addFormData.itemDescription}
-                  onChange={(e) => handleAddFormChange('itemDescription', e.target.value)}
-                  placeholder="Product/Service description"
-                />
-              </div>
+            <div className="form-field">
+              <label>Invoice Date *</label>
+              <input
+                type="date"
+                value={addFormData.invoiceDate}
+                onChange={(e) => handleAddFormChange('invoiceDate', e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
+              />
             </div>
-            
-            <div className="form-grid">
-              <div className="form-group">
-                <label>Quantity</label>
-                <input
-                  type="number"
-                  value={addFormData.quantity}
-                  onChange={(e) => handleAddFormChange('quantity', e.target.value)}
-                  placeholder="Quantity"
-                  step="0.01"
-                  min="0"
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Unit</label>
-                <select
-                  value={addFormData.unit}
-                  onChange={(e) => handleAddFormChange('unit', e.target.value)}
-                >
-                  {units.map(unit => (
-                    <option key={unit} value={unit}>{unit}</option>
-                  ))}
-                </select>
-              </div>
+
+            {/* Row 2 */}
+            <div className="form-field">
+              <label>Place of Supply *</label>
+              <select
+                value={addFormData.placeOfSupply}
+                onChange={(e) => handleAddFormChange('placeOfSupply', e.target.value)}
+              >
+                {indianStates.map(state => (
+                  <option key={state} value={state}>{state}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-field">
+              <label>Invoice Type</label>
+              <select
+                value={addFormData.invoiceType}
+                onChange={(e) => handleAddFormChange('invoiceType', e.target.value)}
+              >
+                {invoiceTypes.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-field">
+              <label>Reverse Charge</label>
+              <select
+                value={addFormData.reverseCharge}
+                onChange={(e) => handleAddFormChange('reverseCharge', e.target.value)}
+              >
+                <option value="N">No</option>
+                <option value="Y">Yes</option>
+              </select>
+            </div>
+
+            <div className="form-field">
+              <label>HSN/SAC Code</label>
+              <input
+                type="text"
+                value={addFormData.hsnCode}
+                onChange={(e) => handleAddFormChange('hsnCode', e.target.value)}
+                placeholder="998314"
+                maxLength="8"
+              />
+            </div>
+
+            {/* Row 3 - Tax Fields */}
+            <div className="form-field">
+              <label>Taxable Value (₹) *</label>
+              <input
+                type="number"
+                value={addFormData.taxableValue}
+                onChange={(e) => handleAddFormChange('taxableValue', e.target.value)}
+                placeholder="10000.00"
+                step="0.01"
+                min="0"
+              />
+            </div>
+
+            <div className="form-field">
+              <label>Tax Rate (%)</label>
+              <select
+                value={addFormData.taxRate}
+                onChange={(e) => handleAddFormChange('taxRate', e.target.value)}
+              >
+                {taxRates.map(rate => (
+                  <option key={rate} value={rate}>{rate}%</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-field">
+              <label>CGST (₹) - Auto</label>
+              <input
+                type="text"
+                value={addFormData.cgst}
+                readOnly
+                className="readonly-field"
+              />
+            </div>
+
+            <div className="form-field">
+              <label>SGST (₹) - Auto</label>
+              <input
+                type="text"
+                value={addFormData.sgst}
+                readOnly
+                className="readonly-field"
+              />
+            </div>
+
+            {/* Row 4 */}
+            <div className="form-field">
+              <label>IGST (₹) - Auto</label>
+              <input
+                type="text"
+                value={addFormData.igst}
+                readOnly
+                className="readonly-field"
+              />
+            </div>
+
+            <div className="form-field">
+              <label>Cess Amount (₹)</label>
+              <input
+                type="number"
+                value={addFormData.cessAmount}
+                onChange={(e) => handleAddFormChange('cessAmount', e.target.value)}
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+              />
+            </div>
+
+            <div className="form-field">
+              <label>Item Description</label>
+              <input
+                type="text"
+                value={addFormData.itemDescription}
+                onChange={(e) => handleAddFormChange('itemDescription', e.target.value)}
+                placeholder="Product/Service description"
+              />
+            </div>
+
+            <div className="form-field">
+              <label>Quantity</label>
+              <input
+                type="number"
+                value={addFormData.quantity}
+                onChange={(e) => handleAddFormChange('quantity', e.target.value)}
+                placeholder="1"
+                step="0.01"
+                min="0"
+              />
+            </div>
+
+            {/* Row 5 */}
+            <div className="form-field">
+              <label>Unit</label>
+              <select
+                value={addFormData.unit}
+                onChange={(e) => handleAddFormChange('unit', e.target.value)}
+              >
+                {units.map(unit => (
+                  <option key={unit} value={unit}>{unit}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-field total-field">
+              <label>Total Invoice Value (₹)</label>
+              <div className="total-value">₹ {addFormData.totalInvoiceValue}</div>
             </div>
           </div>
 
@@ -734,7 +705,7 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
             </button>
             <button className="btn-primary" onClick={handleSaveAddForm}>
               <Save size={18} />
-              Save Entry
+              Save B2B Entry
             </button>
           </div>
         </div>
