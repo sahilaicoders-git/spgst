@@ -354,7 +354,7 @@ const MainApplication = ({ selectedClients, selectedMonth, onBack }) => {
   );
 
   const renderSettings = () => (
-    <div className="tab-content">
+    <div className="settings-full-page">
       <div className="settings-container">
         <div className="settings-header">
       <h2>Settings & Configuration</h2>

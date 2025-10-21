@@ -1,7 +1,7 @@
 /* Sundry Debtors Container */
 .sundry-debtors {
   padding: 0;
-  background: #f8fafc;
+  background: white;
   min-height: 100vh;
 }
 
@@ -10,20 +10,20 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
+  min-height: 50vh;
   color: #64748b;
-  gap: 16px;
+  gap: 12px;
 }
 
 .sundry-debtors-empty h3 {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   color: #334155;
   margin: 0;
 }
 
 .sundry-debtors-empty p {
-  font-size: 16px;
+  font-size: 14px;
   color: #64748b;
   margin: 0;
 }
@@ -31,11 +31,11 @@
 /* Header */
 .debtors-header {
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  padding: 20px 32px;
+  padding: 16px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 }
 
 .header-left {
@@ -45,10 +45,10 @@
 }
 
 .header-icon {
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -58,14 +58,14 @@
 
 .header-content h2 {
   margin: 0;
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 700;
   color: white;
 }
 
 .header-content p {
   margin: 4px 0 0 0;
-  font-size: 14px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -78,10 +78,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 20px;
+  padding: 10px 16px;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 6px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -90,23 +90,23 @@
 .add-btn {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
 }
 
 .add-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 /* Search */
 .debtors-search {
-  padding: 24px 32px;
+  padding: 16px 20px;
   background: white;
   border-bottom: 2px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .search-box {
@@ -157,10 +157,10 @@
 
 /* Table */
 .debtors-table-container {
-  margin: 24px 32px;
+  margin: 0;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
 }
 
