@@ -45,17 +45,24 @@ const B2BSales = ({ salesEntries, onImportB2BData, selectedClient, selectedMonth
     const fetchDebtors = async () => {
       if (!selectedClient) return;
       
+      // Extract client ID - handle both string and object formats
+      const clientId = typeof selectedClient === 'string' 
+        ? selectedClient 
+        : selectedClient.id || selectedClient;
+      
+      console.log('Fetching debtors for client:', clientId);
+      
       try {
-        const response = await fetch(`http://127.0.0.1:5001/api/clients/${selectedClient}/sundry-debtors`);
+        const response = await fetch(`http://127.0.0.1:5001/api/clients/${clientId}/sundry-debtors`);
         if (response.ok) {
           const data = await response.json();
           setSundryDebtors(data);
-          console.log(`Loaded ${data.length} sundry debtors for autocomplete`);
+          console.log(`✓ Loaded ${data.length} sundry debtors for autocomplete:`, data);
         } else {
-          console.error('Failed to fetch sundry debtors:', response.status);
+          console.error('✗ Failed to fetch sundry debtors:', response.status);
         }
       } catch (error) {
-        console.error('Error fetching sundry debtors:', error);
+        console.error('✗ Error fetching sundry debtors:', error);
       }
     };
     
