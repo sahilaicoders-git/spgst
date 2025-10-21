@@ -368,6 +368,150 @@ table tbody tr:last-child td {
   border-bottom: none;
 }
 
+table tfoot {
+  background: #f8fafc;
+  border-top: 2px solid #e2e8f0;
+}
+
+table tfoot td {
+  padding: 16px 12px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Purchase Summary Grid */
+.purchase-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.purchase-summary-card {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.purchase-summary-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+}
+
+.purchase-summary-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.purchase-summary-card .card-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  backdrop-filter: blur(10px);
+}
+
+.purchase-summary-card .card-header h4 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+}
+
+.purchase-summary-card .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.purchase-summary-card .summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.purchase-summary-card .summary-row span {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.purchase-summary-card .summary-row strong {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.purchase-summary-card .summary-row.total-row {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.purchase-summary-card .summary-row.total-row span {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.purchase-summary-card .summary-row.total-row strong {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Rate Breakup Section */
+.rate-breakup-section {
+  margin-top: 32px;
+}
+
+.rate-breakup-section h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.rate-breakup-table {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.rate-breakup-table table {
+  width: 100%;
+}
+
+.rate-breakup-table table th:first-child,
+.rate-breakup-table table td:first-child {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.rate-breakup-table .total-row {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  font-weight: 700;
+}
+
+.rate-breakup-table .total-row td {
+  color: #1e40af;
+  font-size: 14px;
+}
+
 /* ITC Section */
 .itc-section h3 {
   margin: 0 0 24px 0;

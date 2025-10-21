@@ -727,39 +727,131 @@ const ReportPage = ({ selectedClient, selectedMonth }) => {
         {activeSection === 'purchases' && (
           <div className="purchases-section">
             <h3>Purchase Details</h3>
-            <div className="purchases-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Invoice No.</th>
-                    <th>Date</th>
-                    <th>Supplier</th>
-                    <th>GSTIN</th>
-                    <th>Taxable Value</th>
-                    <th>CGST</th>
-                    <th>SGST</th>
-                    <th>IGST</th>
-                    <th>ITC Eligible</th>
-                    <th>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {reportData.purchases.map((purchase, index) => (
-                    <tr key={index}>
-                      <td>{purchase.invoiceNumber}</td>
-                      <td>{purchase.invoiceDate}</td>
-                      <td>{purchase.supplierName}</td>
-                      <td>{purchase.supplierGSTIN}</td>
-                      <td>₹{parseFloat(purchase.taxableValue || 0).toFixed(2)}</td>
-                      <td>₹{parseFloat(purchase.centralTax || 0).toFixed(2)}</td>
-                      <td>₹{parseFloat(purchase.stateTax || 0).toFixed(2)}</td>
-                      <td>₹{parseFloat(purchase.integratedTax || 0).toFixed(2)}</td>
-                      <td>{purchase.itcEligible !== false ? 'Yes' : 'No'}</td>
-                      <td>₹{parseFloat(purchase.invoiceValue || 0).toFixed(2)}</td>
+            
+            {/* Purchase Summary Cards */}
+            <div className="purchase-summary-grid">
+              {/* B2B Total Card */}
+              <div className="purchase-summary-card b2b-card">
+                <div className="card-header">
+                  <div className="card-icon">
+                    <CreditCard size={24} />
+                  </div>
+                  <h4>B2B Purchases Total</h4>
+                </div>
+                <div className="card-body">
+                  <div className="summary-row">
+                    <span>Total Invoices:</span>
+                    <strong>{reportData.purchases.length}</strong>
+                  </div>
+                  <div className="summary-row">
+                    <span>Taxable Value:</span>
+                    <strong>₹{reportData.purchases.reduce((sum, p) => sum + parseFloat(p.taxableValue || 0), 0).toFixed(2)}</strong>
+                  </div>
+                  <div className="summary-row">
+                    <span>CGST:</span>
+                    <strong>₹{reportData.purchases.reduce((sum, p) => sum + parseFloat(p.centralTax || 0), 0).toFixed(2)}</strong>
+                  </div>
+                  <div className="summary-row">
+                    <span>SGST:</span>
+                    <strong>₹{reportData.purchases.reduce((sum, p) => sum + parseFloat(p.stateTax || 0), 0).toFixed(2)}</strong>
+                  </div>
+                  <div className="summary-row">
+                    <span>IGST:</span>
+                    <strong>₹{reportData.purchases.reduce((sum, p) => sum + parseFloat(p.integratedTax || 0), 0).toFixed(2)}</strong>
+                  </div>
+                  <div className="summary-row">
+                    <span>Cess:</span>
+                    <strong>₹{reportData.purchases.reduce((sum, p) => sum + parseFloat(p.cess || 0), 0).toFixed(2)}</strong>
+                  </div>
+                  <div className="summary-row total-row">
+                    <span>Total Amount:</span>
+                    <strong>₹{reportData.purchases.reduce((sum, p) => sum + parseFloat(p.invoiceValue || 0), 0).toFixed(2)}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* GST Rate-wise Breakup */}
+            <div className="rate-breakup-section">
+              <h4>GST Rate-wise Breakup</h4>
+              <div className="rate-breakup-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>GST Rate</th>
+                      <th>No. of Invoices</th>
+                      <th>Taxable Value</th>
+                      <th>CGST</th>
+                      <th>SGST</th>
+                      <th>IGST</th>
+                      <th>Cess</th>
+                      <th>Total Tax</th>
+                      <th>Invoice Value</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {(() => {
+                      // Group purchases by tax rate
+                      const rateGroups = {};
+                      reportData.purchases.forEach(purchase => {
+                        const rate = purchase.taxRate || '0';
+                        if (!rateGroups[rate]) {
+                          rateGroups[rate] = {
+                            count: 0,
+                            taxableValue: 0,
+                            cgst: 0,
+                            sgst: 0,
+                            igst: 0,
+                            cess: 0,
+                            total: 0
+                          };
+                        }
+                        rateGroups[rate].count++;
+                        rateGroups[rate].taxableValue += parseFloat(purchase.taxableValue || 0);
+                        rateGroups[rate].cgst += parseFloat(purchase.centralTax || 0);
+                        rateGroups[rate].sgst += parseFloat(purchase.stateTax || 0);
+                        rateGroups[rate].igst += parseFloat(purchase.integratedTax || 0);
+                        rateGroups[rate].cess += parseFloat(purchase.cess || 0);
+                        rateGroups[rate].total += parseFloat(purchase.invoiceValue || 0);
+                      });
+
+                      // Sort by rate
+                      const sortedRates = Object.keys(rateGroups).sort((a, b) => parseFloat(b) - parseFloat(a));
+
+                      return sortedRates.map(rate => {
+                        const group = rateGroups[rate];
+                        const totalTax = group.cgst + group.sgst + group.igst + group.cess;
+                        return (
+                          <tr key={rate}>
+                            <td><strong>{rate}%</strong></td>
+                            <td>{group.count}</td>
+                            <td>₹{group.taxableValue.toFixed(2)}</td>
+                            <td>₹{group.cgst.toFixed(2)}</td>
+                            <td>₹{group.sgst.toFixed(2)}</td>
+                            <td>₹{group.igst.toFixed(2)}</td>
+                            <td>₹{group.cess.toFixed(2)}</td>
+                            <td>₹{totalTax.toFixed(2)}</td>
+                            <td>₹{group.total.toFixed(2)}</td>
+                          </tr>
+                        );
+                      });
+                    })()}
+                  </tbody>
+                  <tfoot>
+                    <tr className="total-row">
+                      <td><strong>Total</strong></td>
+                      <td><strong>{reportData.purchases.length}</strong></td>
+                      <td><strong>₹{reportData.purchases.reduce((sum, p) => sum + parseFloat(p.taxableValue || 0), 0).toFixed(2)}</strong></td>
+                      <td><strong>₹{reportData.purchases.reduce((sum, p) => sum + parseFloat(p.centralTax || 0), 0).toFixed(2)}</strong></td>
+                      <td><strong>₹{reportData.purchases.reduce((sum, p) => sum + parseFloat(p.stateTax || 0), 0).toFixed(2)}</strong></td>
+                      <td><strong>₹{reportData.purchases.reduce((sum, p) => sum + parseFloat(p.integratedTax || 0), 0).toFixed(2)}</strong></td>
+                      <td><strong>₹{reportData.purchases.reduce((sum, p) => sum + parseFloat(p.cess || 0), 0).toFixed(2)}</strong></td>
+                      <td><strong>₹{(reportData.purchases.reduce((sum, p) => sum + parseFloat(p.centralTax || 0) + parseFloat(p.stateTax || 0) + parseFloat(p.integratedTax || 0) + parseFloat(p.cess || 0), 0)).toFixed(2)}</strong></td>
+                      <td><strong>₹{reportData.purchases.reduce((sum, p) => sum + parseFloat(p.invoiceValue || 0), 0).toFixed(2)}</strong></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
             </div>
           </div>
         )}
