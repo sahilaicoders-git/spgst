@@ -1659,3 +1659,43 @@
 .grouped-entry-simple:hover {
   background: rgba(59, 130, 246, 0.05);
 }
+
+
+/* ========================================
+   120Hz HIGH REFRESH RATE OPTIMIZATION
+   ======================================== */
+
+/* Hardware Acceleration for Purchase Page */
+.purchase-page,
+.purchase-form,
+.entry-card,
+.entry-item,
+.form-group input,
+.form-group select,
+.form-button,
+.submit-btn {
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Optimized Transitions for 120Hz */
+.entry-card,
+.entry-item {
+  transition: all 0.16s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.form-button,
+.submit-btn {
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Smooth Scrolling for 120Hz */
+.purchase-page,
+.entries-container {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+

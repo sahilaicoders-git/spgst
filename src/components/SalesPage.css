@@ -508,3 +508,44 @@
     font-size: 12px;
   }
 }
+
+/* ========================================
+   120Hz HIGH REFRESH RATE OPTIMIZATION
+   ======================================== */
+
+/* Hardware Acceleration for Sales Page */
+.sales-page,
+.sales-form,
+.invoice-card,
+.invoice-item,
+.form-group input,
+.form-group select,
+.form-button,
+.submit-btn,
+.add-item-btn {
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Optimized Transitions for 120Hz */
+.invoice-card,
+.invoice-item {
+  transition: all 0.16s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.form-button,
+.submit-btn,
+.add-item-btn {
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Smooth Scrolling for 120Hz */
+.sales-page,
+.invoices-container {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+

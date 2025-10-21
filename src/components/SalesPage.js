@@ -7,7 +7,6 @@ import {
   Save,
   X,
   AlertCircle,
-  ShoppingBag,
   Building,
   Users,
   Package,
@@ -340,49 +339,6 @@ const SalesPage = ({ selectedClients, selectedMonth }) => {
   return (
     <div className="sales-page">
       <div className="sales-header">
-        <div className="header-top">
-          <div className="header-title-section">
-            <div className="title-icon-wrapper">
-              <ShoppingBag size={32} className="page-icon" />
-            </div>
-            <div className="title-content">
-              <h2>Sales Management</h2>
-              <p className="header-subtitle">
-                {selectedClients.length === 1 
-                  ? `${selectedClients[0]?.clientName || 'Client'} - ${formatMonthYear(selectedMonth)}`
-                  : `${selectedClients.length} Clients - ${formatMonthYear(selectedMonth)}`}
-              </p>
-            </div>
-          </div>
-          <div className="header-actions">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv"
-              onChange={handleFileImport}
-              style={{ display: 'none' }}
-            />
-            <button 
-              className="action-btn import-btn"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isImporting}
-            >
-              <Upload size={18} />
-              {isImporting ? 'Importing...' : 'Import Sales'}
-            </button>
-            <button 
-              className="action-btn add-btn"
-              onClick={() => {
-                setEditingEntry(null);
-                setShowAddForm(true);
-              }}
-            >
-              <Plus size={18} />
-              Add Sale
-            </button>
-          </div>
-        </div>
-
         <div className="view-tabs">
           <button
             className={`view-tab ${activeView === 'b2b' ? 'active' : ''}`}
@@ -420,8 +376,16 @@ const SalesPage = ({ selectedClients, selectedMonth }) => {
             3B Sales
           </button>
         </div>
-
       </div>
+
+      {/* Hidden file input for imports */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv"
+        onChange={handleFileImport}
+        style={{ display: 'none' }}
+      />
 
       {showAddForm && (
         <div className="add-form-overlay">
