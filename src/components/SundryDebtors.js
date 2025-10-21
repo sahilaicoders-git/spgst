@@ -237,23 +237,25 @@ const SundryDebtors = ({ selectedClient }) => {
           <table className="debtors-table">
             <thead>
               <tr>
-                <th>Debtor Name</th>
-                <th>GSTIN</th>
-                <th>Address</th>
-                <th>Contact</th>
-                <th>Email</th>
-                <th>Actions</th>
+                <th className="col-sr">Sr. No.</th>
+                <th className="col-name">Debtor Name</th>
+                <th className="col-gstin">GSTIN</th>
+                <th className="col-address">Address</th>
+                <th className="col-contact">Contact</th>
+                <th className="col-email">Email</th>
+                <th className="col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredDebtors.map((debtor) => (
+              {filteredDebtors.map((debtor, index) => (
                 <tr key={debtor.id}>
-                  <td className="debtor-name">{debtor.debtorName}</td>
-                  <td className="gstin">{debtor.gstin}</td>
-                  <td className="address">{debtor.address || '-'}</td>
-                  <td className="contact">{debtor.contact || '-'}</td>
-                  <td className="email">{debtor.email || '-'}</td>
-                  <td className="actions">
+                  <td className="col-sr">{index + 1}</td>
+                  <td className="col-name debtor-name">{debtor.debtorName}</td>
+                  <td className="col-gstin gstin">{debtor.gstin}</td>
+                  <td className="col-address address">{debtor.address || '-'}</td>
+                  <td className="col-contact contact">{debtor.contact || '-'}</td>
+                  <td className="col-email email">{debtor.email || '-'}</td>
+                  <td className="col-actions actions">
                     <button
                       className="icon-btn edit-btn"
                       onClick={() => handleEditClick(debtor)}
