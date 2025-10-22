@@ -14,7 +14,9 @@
     "electron-pack": "electron-builder",
     "preelectron-pack": "npm run build",
     "build-mac": "./build-mac.sh",
-    "build-mac-quick": "npm run build && npm run electron-pack -- --mac"
+    "build-mac-quick": "npm run build && npm run electron-pack -- --mac",
+    "build-win": "npm run build && npm run electron-pack -- --win",
+    "build-win-quick": "npm run electron-pack -- --win --dir"
   },
   "keywords": [
     "gst",
@@ -113,12 +115,10 @@
         {
           "target": "nsis",
           "arch": [
-            "x64",
-            "ia32"
+            "x64"
           ]
         }
       ],
-      "icon": "public/spgsticon.png",
       "requestedExecutionLevel": "asInvoker",
       "artifactName": "${productName}-${version}-${arch}.${ext}"
     },
@@ -127,9 +127,9 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "installerIcon": "public/spgsticon.png",
-      "uninstallerIcon": "public/spgsticon.png",
-      "shortcutName": "GST Software"
+      "shortcutName": "GST Software",
+      "perMachine": false,
+      "installerLanguages": ["en_US"]
     },
     "linux": {
       "target": "AppImage",
