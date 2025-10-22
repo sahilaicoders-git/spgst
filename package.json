@@ -12,7 +12,9 @@
     "electron": "electron .",
     "electron-dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "electron-pack": "electron-builder",
-    "preelectron-pack": "npm run build"
+    "preelectron-pack": "npm run build",
+    "build-mac": "./build-mac.sh",
+    "build-mac-quick": "npm run build && npm run electron-pack -- --mac"
   },
   "keywords": [
     "gst",
@@ -69,12 +71,45 @@
       "public/electron.js",
       "public/preload.js",
       "public/spgsticon.png",
+      "public/main-app/**/*",
       "backend/**/*",
-      "node_modules/**/*"
+      "!backend/venv",
+      "!backend/__pycache__",
+      "!backend/**/*.pyc",
+      "node_modules/**/*",
+      "!node_modules/.cache"
+    ],
+    "extraResources": [
+      {
+        "from": "backend",
+        "to": "backend",
+        "filter": ["**/*", "!venv/**/*", "!__pycache__/**/*", "!**/*.pyc"]
+      }
     ],
     "mac": {
       "category": "public.app-category.business",
-      "icon": "public/spgsticon.png"
+      "icon": "public/spgsticon.png",
+      "target": ["dmg", "zip"],
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "title": "GST Software Installer",
+      "background": null
     },
     "win": {
       "target": [

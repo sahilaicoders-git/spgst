@@ -7,12 +7,26 @@ let mainWindow;
 let flaskProcess;
 
 function startFlaskBackend() {
-  const backendPath = path.join(__dirname, '../backend');
+  // Determine backend path based on development or production
+  let backendPath;
+  if (isDev) {
+    backendPath = path.join(__dirname, '../backend');
+  } else {
+    // In production, backend is in app resources
+    backendPath = path.join(process.resourcesPath, 'backend');
+  }
+  
+  console.log(`Backend path: ${backendPath}`);
+  
   const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
   
   flaskProcess = spawn(pythonCommand, ['app.py'], {
     cwd: backendPath,
-    stdio: 'pipe'
+    stdio: 'pipe',
+    env: {
+      ...process.env,
+      PYTHONUNBUFFERED: '1'
+    }
   });
 
   flaskProcess.stdout.on('data', (data) => {
@@ -25,6 +39,10 @@ function startFlaskBackend() {
 
   flaskProcess.on('close', (code) => {
     console.log(`Flask process exited with code ${code}`);
+  });
+
+  flaskProcess.on('error', (err) => {
+    console.error(`Failed to start Flask: ${err.message}`);
   });
 }
 
